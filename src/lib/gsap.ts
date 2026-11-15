@@ -3,9 +3,10 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
 import { CustomEase } from 'gsap/CustomEase'
+import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin'
 import { useGSAP } from '@gsap/react'
 
-gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase, useGSAP)
+gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase, ScrambleTextPlugin, useGSAP)
 
 // The two curves of the site. 'soft' settles things into place, 'cut' moves whole surfaces.
 CustomEase.create('soft', '0.16,1,0.3,1')

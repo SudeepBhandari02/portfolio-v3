@@ -4,9 +4,13 @@ import { onReady } from '../lib/ready'
 import { PROFILE } from '../lib/content'
 import { goToSection } from '../lib/scroll'
 import { updateNavTheme } from '../lib/nav-theme'
+import { createCellField } from '../lib/cell-field'
 import { Arrow, Magnetic } from '../components/ui'
 
 const LINES = ['Sudeep', 'Bhandari']
+
+// The label above the name cycles through these, re-typing itself each time.
+const ROLES = [PROFILE.role, 'Semantic layers', 'Query engines', 'LLM agents', 'Interfaces people touch']
 
 // Width axis range of the display face, and how far the pointer's pull reaches.
 const NARROW = 62
@@ -14,16 +18,64 @@ const WIDE = 118
 const REACH = 0.22 // share of the viewport width
 
 // The name is the hero. Set heavy and condensed, it widens under the pointer letter by letter.
+// Behind it lies a sheet of cells that behaves like water: it swells on its own, rises under the
+// pointer, and rings outward from every click and from the orange cell when it lands.
 // On scroll the page holds still: the one orange cell beside the name grows until it is the page.
 export function Hero() {
   const root = useRef<HTMLElement>(null)
   const title = useRef<HTMLHeadingElement>(null)
   const cell = useRef<HTMLSpanElement>(null)
+  const canvas = useRef<HTMLCanvasElement>(null)
+  const role = useRef<HTMLSpanElement>(null)
+  const addr = useRef<HTMLSpanElement>(null)
 
   useGSAP(
     () => {
+      // The sheet is drawn once even without motion; it only moves when motion is allowed.
+      const field = createCellField(canvas.current!)
+      window.addEventListener('resize', field.resize)
+
       const mm = gsap.matchMedia()
       mm.add(MOTION_OK, () => {
+        const section = root.current!
+        const io = new IntersectionObserver(([entry]) => (entry.isIntersecting ? field.start() : field.stop()))
+        io.observe(section)
+
+        const local = (x: number, y: number) => {
+          const r = canvas.current!.getBoundingClientRect()
+          return [x - r.left, y - r.top] as const
+        }
+        let touched = 0
+        const onMove = (e: PointerEvent) => {
+          const [x, y] = local(e.clientX, e.clientY)
+          field.point(x, y)
+          if (addr.current) addr.current.textContent = field.address(x, y)
+          touched = performance.now()
+        }
+        const onDown = (e: PointerEvent) => {
+          field.drop(...local(e.clientX, e.clientY))
+          touched = performance.now()
+        }
+        section.addEventListener('pointermove', onMove)
+        section.addEventListener('pointerleave', field.release)
+        section.addEventListener('pointerdown', onDown)
+
+        // The orange cell is the stone. It drops one ring when it lands, and another now and then if left alone.
+        const dropAtCell = () => {
+          const c = cell.current!.getBoundingClientRect()
+          field.drop(...local(c.left + c.width / 2, c.top + c.height / 2))
+        }
+        const idle = window.setInterval(() => {
+          if (performance.now() - touched > 5000 && window.scrollY < 40 && !document.hidden) dropAtCell()
+        }, 6500)
+
+        // The role label re-types itself through what the role actually covers.
+        const roles = gsap.timeline({ repeat: -1, delay: 4 })
+        ROLES.forEach((_, i) => {
+          const next = ROLES[(i + 1) % ROLES.length]
+          roles.to(role.current, { duration: 0.9, ease: 'none', scrambleText: { text: next, chars: 'upperCase', speed: 0.5 } }, '+=2.4')
+        })
+
         const chars = gsap.utils.toArray<HTMLElement>('[data-char]')
         // Lines mask their letters for the entrance only. Afterwards the cell must be free to outgrow its line.
         gsap.set('[data-line]', { overflow: 'hidden' })
@@ -34,6 +86,8 @@ export function Hero() {
           .from(chars, { yPercent: 110, duration: 1.1, stagger: 0.035 }, 0)
           .fromTo(chars, { '--wdth': 125, '--wght': 200 }, { '--wdth': NARROW, '--wght': 800, duration: 1.4, stagger: 0.035 }, 0.1)
           .from('[data-cell-in]', { scale: 0, duration: 0.7, ease: 'back.out(2.4)' }, 0.9)
+          .call(dropAtCell, undefined, 1.2)
+          .from(canvas.current, { opacity: 0, duration: 1.6, ease: 'none' }, 0.2)
           .from('[data-h-fade]', { opacity: 0, y: 16, duration: 0.9, stagger: 0.08 }, 0.7)
           .from('[data-h-rule]', { scaleX: 0, transformOrigin: 'left', duration: 1.2, ease: 'cut' }, 0.5)
           .set('[data-line]', { overflow: 'visible' })
@@ -95,19 +149,35 @@ export function Hero() {
           cancelAnimationFrame(raf)
           title.current?.removeEventListener('pointermove', pull)
           title.current?.removeEventListener('pointerleave', rest)
+          io.disconnect()
+          window.clearInterval(idle)
+          field.stop()
+          section.removeEventListener('pointermove', onMove)
+          section.removeEventListener('pointerleave', field.release)
+          section.removeEventListener('pointerdown', onDown)
         }
       })
+
+      return () => {
+        window.removeEventListener('resize', field.resize)
+        field.destroy()
+      }
     },
     { scope: root },
   )
 
   return (
     <section id="top" ref={root} aria-labelledby="hero-title" className="relative flex h-svh min-h-[600px] flex-col justify-end overflow-hidden pb-6">
+      <canvas ref={canvas} aria-hidden className="pointer-events-none absolute inset-0 size-full" />
+
       {/* Top right: who, in a sentence. */}
       <div data-h-out className="gutter absolute inset-x-0 top-[18svh] grid grid-cols-12 gap-x-4 md:top-[16svh]">
         <p data-h-fade className="t-label col-span-12 flex items-center gap-3 text-fg-muted md:col-span-4">
           <span className="cell" />
-          {PROFILE.role}
+          <span className="sr-only">{PROFILE.role}</span>
+          <span ref={role} aria-hidden>
+            {PROFILE.role}
+          </span>
         </p>
         <p data-h-fade className="t-lead col-span-12 mt-6 max-w-[34ch] md:col-span-7 md:col-start-6 md:mt-0 lg:col-span-5 lg:col-start-8">
           I build the layer between raw tables and the answers people trust: semantic models, query engines, and the
@@ -147,8 +217,12 @@ export function Hero() {
         <div data-h-rule className="mt-6 hidden h-px bg-rule md:block" />
         <div data-h-out className="t-label mt-4 hidden flex-wrap items-center justify-between gap-x-8 gap-y-3 text-fg-muted md:flex">
           <span data-h-fade>SDE 1 at StackPro Technologies</span>
-          <span data-h-fade className="hidden sm:inline">
-            Portfolio · 2026
+          <span data-h-fade className="hidden lg:inline">
+            Cell{' '}
+            <span ref={addr} className="nums text-fg">
+              R00:C00
+            </span>{' '}
+            · Click anywhere, it ripples
           </span>
           <Magnetic>
             <button data-h-fade type="button" onClick={() => goToSection('work')} className="flex items-center gap-2 text-fg">
