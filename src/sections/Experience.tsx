@@ -99,7 +99,7 @@ export function Experience() {
                   </div>
                 )}
                 <div data-reveal="up" className="rule-t grid grid-cols-8 gap-x-4 gap-y-3 py-8">
-                  <span className="t-label nums col-span-1 text-signal">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="t-label nums col-span-1 text-signal-ink">{String(i + 1).padStart(2, '0')}</span>
                   <div className="col-span-7">
                     <h3 className="t-h2">{item.title}</h3>
                     <p className="mt-4 max-w-[56ch] text-fg-muted">{item.text}</p>

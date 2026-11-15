@@ -50,7 +50,7 @@ export function Axion() {
     <div ref={root}>
       <article>
         {/* Title */}
-        <header className="gutter relative flex min-h-[92svh] flex-col justify-end pt-[16vh] pb-6">
+        <header id="top" className="gutter relative flex min-h-[92svh] flex-col justify-end pt-[16vh] pb-6">
           <div data-a-fade className="t-label mb-auto flex flex-wrap items-center justify-between gap-4 text-fg-muted">
             <RouteLink to="/" scrollTo="work" className="link flex items-center gap-2 text-fg">
               <Arrow dir="w" /> Index
@@ -85,7 +85,7 @@ export function Axion() {
         </header>
 
         <figure className="gutter pb-[12vh]">
-          <div data-a-shot className="overflow-hidden bg-fg">
+          <div data-a-shot className="shot overflow-hidden">
             <img src={HERO.src} alt={HERO.alt} width={HERO.w} height={HERO.h} decoding="async" className="w-full will-change-transform" />
           </div>
           <figcaption className="t-label mt-3 flex justify-between gap-6 text-fg-subtle">
@@ -95,7 +95,7 @@ export function Axion() {
         </figure>
 
         {/* Overview */}
-        <section aria-labelledby="overview-title" className="gutter grid grid-cols-12 gap-x-4 pb-[16vh]">
+        <section id="overview" aria-labelledby="overview-title" className="gutter grid grid-cols-12 gap-x-4 pb-[16vh]">
           <div className="col-span-12 md:col-span-3">
             <h2 id="overview-title">
               <Label index="00">Overview</Label>
@@ -110,7 +110,7 @@ export function Axion() {
         <Pipeline />
 
         {/* What I built */}
-        <section aria-labelledby="built-title" className="rule-t relative pb-[10vh]">
+        <section id="built" aria-labelledby="built-title" className="rule-t relative pb-[10vh]">
           <header className="gutter grid grid-cols-12 items-end gap-x-4 pt-[12vh] pb-[8vh]">
             <div className="col-span-12 md:col-span-3">
               <Label index="03">What I built</Label>
@@ -123,7 +123,7 @@ export function Axion() {
           {AXION.chapters.map((c, i) => (
             <div key={c.title}>
               <div className="gutter rule-t grid grid-cols-12 gap-x-4 gap-y-6 py-[7vh]">
-                <span data-reveal="up" className="t-label nums col-span-12 text-signal md:col-span-3">
+                <span data-reveal="up" className="t-label nums col-span-12 text-signal-ink md:col-span-3">
                   3.{i + 1}
                 </span>
                 <div className="col-span-12 md:col-span-5">
@@ -146,7 +146,7 @@ export function Axion() {
 
               {c.image && i > 0 && (
                 <figure className="gutter pb-[9vh]">
-                  <div data-reveal="image" className="overflow-hidden bg-fg">
+                  <div data-reveal="image" className="shot overflow-hidden">
                     <img src={c.image.src} alt={c.image.alt} width={c.image.w} height={c.image.h} loading="lazy" decoding="async" className="w-full" />
                   </div>
                   <figcaption className="t-label mt-3 flex justify-between gap-6 text-fg-subtle">
@@ -159,7 +159,7 @@ export function Axion() {
               {i === 0 && (
                 <figure className="gutter grid grid-cols-12 gap-x-4 pb-[9vh]">
                   <div className="col-span-12 md:col-span-5 md:col-start-4 lg:col-span-4 lg:col-start-4">
-                    <div data-reveal="image" className="overflow-hidden bg-fg">
+                    <div data-reveal="image" className="shot overflow-hidden">
                       <img src={INSPECTOR.src} alt={INSPECTOR.alt} width={1100} height={1630} loading="lazy" decoding="async" className="w-full" />
                     </div>
                   </div>
@@ -198,7 +198,7 @@ export function Axion() {
         </section>
 
         {/* Numbers */}
-        <section aria-labelledby="numbers-title" className="rule-t gutter pt-[12vh] pb-[14vh]">
+        <section id="numbers" aria-labelledby="numbers-title" className="rule-t gutter pt-[12vh] pb-[14vh]">
           <div className="grid grid-cols-12 gap-x-4">
             <div className="col-span-12 md:col-span-3">
               <Label index="04">By the numbers</Label>
@@ -221,7 +221,7 @@ export function Axion() {
         </section>
 
         {/* Stack */}
-        <section aria-labelledby="stack-title" className="rule-t gutter relative grid grid-cols-12 gap-x-4 pt-[12vh] pb-[60vh]">
+        <section id="stack" aria-labelledby="stack-title" className="rule-t gutter relative grid grid-cols-12 gap-x-4 pt-[12vh] pb-[60vh]">
           <div className="col-span-12 md:col-span-3">
             <h2 id="stack-title">
               <Label index="05">Stack</Label>

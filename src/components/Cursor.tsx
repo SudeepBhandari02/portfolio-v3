@@ -60,7 +60,7 @@ export function Cursor() {
       ref={el}
       data-chrome
       aria-hidden
-      className="pointer-events-none fixed top-0 left-0 z-[90] grid size-[10px] -translate-x-1/2 -translate-y-1/2 place-items-center bg-signal text-ink-0 opacity-0 transition-colors duration-200 data-[ink=true]:bg-ink-0 data-[ink=true]:text-signal"
+      className="pointer-events-none fixed top-0 left-0 z-[90] grid size-[10px] -translate-x-1/2 -translate-y-1/2 place-items-center bg-signal text-black opacity-0 transition-colors duration-200 data-[ink=true]:bg-black data-[ink=true]:text-signal"
     >
       <span ref={label} className="t-label text-[0.6875rem] opacity-0" />
     </div>

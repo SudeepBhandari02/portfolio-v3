@@ -11,6 +11,15 @@
     <meta name="theme-color" content="#000000" />
     <link rel="preload" as="image" href="/work/axionbi/model-builder.webp" fetchpriority="low" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Stored theme, applied before first paint so the page never flashes the wrong one.
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.dataset.theme = 'light'
+          document.querySelector('meta[name="theme-color"]').content = '#ffffff'
+        }
+      } catch (e) {}
+    </script>
     <link rel="canonical" href="https://sudeepbhandari.tech/" />
 
     <meta property="og:type" content="website" />

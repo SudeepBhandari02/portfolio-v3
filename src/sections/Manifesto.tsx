@@ -40,7 +40,7 @@ export function Manifesto() {
   )
 
   return (
-    <section ref={root} data-nav="ink" aria-labelledby="about-title" className="on-signal relative pt-[14vh] pb-[58vh]">
+    <section id="about" ref={root} data-nav="ink" aria-labelledby="about-title" className="on-signal relative pt-[14vh] pb-[58vh]">
       <div className="gutter grid grid-cols-12 gap-x-4">
         <div className="col-span-12 md:col-span-3">
           <h2 id="about-title">

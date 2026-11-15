@@ -57,7 +57,7 @@ export function Toolbox() {
         ))}
       </div>
 
-      <div className="gutter mt-[16vh] grid grid-cols-12 gap-x-4 gap-y-12">
+      <div id="education" className="gutter mt-[16vh] grid grid-cols-12 gap-x-4 gap-y-12 pt-[4vh]">
         <div className="col-span-12 md:col-span-3">
           <Label index="04">Education</Label>
         </div>

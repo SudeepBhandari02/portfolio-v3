@@ -119,12 +119,26 @@ export const CERTIFICATIONS = [
   { title: 'Agile with Jira', issuer: 'Coursera' },
 ]
 
-export const NAV_LINKS = [
-  { id: 'work', label: 'Work' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'toolbox', label: 'Toolbox' },
-  { id: 'contact', label: 'Contact' },
-] as const
+// What the navigator rail shows on each page. Ids match section ids.
+export const SECTIONS = {
+  '/': [
+    { id: 'top', label: 'Intro' },
+    { id: 'about', label: 'About' },
+    { id: 'work', label: 'Work' },
+    { id: 'experience', label: 'Experience' },
+    { id: 'toolbox', label: 'Toolbox' },
+    { id: 'contact', label: 'Contact' },
+  ],
+  '/work/axionbi': [
+    { id: 'top', label: 'AxionBI' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'problem', label: 'The problem' },
+    { id: 'pipeline', label: 'Pipeline' },
+    { id: 'built', label: 'Six systems' },
+    { id: 'numbers', label: 'Numbers' },
+    { id: 'contact', label: 'Contact' },
+  ],
+} as const
 
 // AxionBI case study. Every number here is counted from the repository or taken from the
 // product's demo warehouse; nothing is a customer claim.

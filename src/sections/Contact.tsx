@@ -82,7 +82,7 @@ export function Contact({ index = '05' }: { index?: string }) {
         </div>
       </div>
 
-      <footer className="gutter rule-t t-label mt-[10vh] flex flex-wrap items-center justify-between gap-x-8 gap-y-3 py-5">
+      <footer className="gutter rule-t t-label mt-[10vh] flex flex-wrap items-center justify-between gap-x-8 gap-y-3 pt-5 pb-20 md:pb-5">
         <span>© 2026 {PROFILE.name}</span>
         <span>
           Bengaluru · <Clock />

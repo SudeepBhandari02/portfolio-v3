@@ -40,7 +40,7 @@ export function Pipeline() {
   )
 
   return (
-    <section ref={root} aria-labelledby="pipeline-title" className="rule-t relative flex min-h-svh flex-col overflow-hidden pt-[14vh] pb-8">
+    <section id="pipeline" ref={root} aria-labelledby="pipeline-title" className="rule-t relative flex min-h-svh flex-col overflow-hidden pt-[14vh] pb-8">
       <header className="gutter grid grid-cols-12 items-end gap-x-4">
         <div className="col-span-12 md:col-span-3">
           <Label index="02">How a number is made</Label>
@@ -68,7 +68,7 @@ export function Pipeline() {
               </p>
               <h3 className="vf mt-6 text-[clamp(2rem,3.6vw,3.75rem)] leading-[0.92] uppercase [--wdth:68] [--wght:740]">{s.step}</h3>
               <p className="mt-5 max-w-[34ch] text-fg-muted">{s.text}</p>
-              <pre className="t-code mt-8 border-l border-signal py-1 pl-4 whitespace-pre-wrap text-fg-muted">{s.code}</pre>
+              <pre className="t-code mt-8 border-l border-signal-ink py-1 pl-4 whitespace-pre-wrap text-fg-muted">{s.code}</pre>
             </li>
           ))}
           </ol>

@@ -53,7 +53,7 @@ export function Problem() {
           scrollTrigger: { trigger: stage.current, start: 'top top', end: '+=320%', pin: true, scrub: 0.6 },
         })
         // 1 → 2: the digits that differ, and what the difference is
-        tl.to('[data-diff="a"]', { color: '#ff6b2c', duration: 0.3 }, 0.5)
+        tl.to('[data-diff="a"]', { '--hot': 1, duration: 0.3 }, 0.5)
           .to('[data-step="0"]', { scaleX: 1, duration: 1 }, 0)
         swap(tl, 1, 1)
         tl.to('[data-gap]', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 1.2)
@@ -66,7 +66,7 @@ export function Problem() {
         // 3 → 4: the roll
         swap(tl, 3, 3)
         tl.to('[data-roll="a"]', { yPercent: -50, duration: 0.6, ease: 'power3.inOut', stagger: 0.05 }, 3.1)
-          .to('[data-diff="a"]', { color: '#ffffff', duration: 0.3 }, 3.7)
+          .to('[data-diff="a"]', { '--hot': 0, duration: 0.3 }, 3.7)
           .to('[data-title-a]', { opacity: 0, duration: 0.2 }, 3.2)
           .to('[data-title-b]', { opacity: 1, duration: 0.2 }, 3.4)
           .to('[data-step="3"]', { scaleX: 1, duration: 1 }, 3)
@@ -77,7 +77,7 @@ export function Problem() {
   )
 
   return (
-    <section ref={root} aria-labelledby="problem-title" className="rule-t relative">
+    <section id="problem" ref={root} aria-labelledby="problem-title" className="rule-t relative">
       <div ref={stage} className="gutter relative flex min-h-svh flex-col justify-between pt-[14vh] pb-8">
         <div className="grid grid-cols-12 gap-x-4">
           <div className="col-span-12 md:col-span-3">
@@ -121,7 +121,7 @@ export function Problem() {
         <div className="grid min-h-[7.5rem] grid-cols-12 gap-x-4">
           <div className="col-span-12 grid content-start gap-y-6 md:col-span-9 md:col-start-4">
           <p data-gap className="t-code text-fg-muted motion-safe:[grid-area:1/1]">
-            <span className="text-signal">− US${gap}</span>
+            <span className="text-signal-ink">− US${gap}</span>
             <br />
             cancelled orders, counted by one chart and not the other
           </p>
@@ -132,7 +132,7 @@ export function Problem() {
             </p>
             <pre className="t-code mt-3 whitespace-pre-wrap">
               net_revenue = SUM(line_amount){'\n'}
-              <span className="text-signal">WHERE order_status IS NOT Cancelled</span>
+              <span className="text-signal-ink">WHERE order_status IS NOT Cancelled</span>
             </pre>
           </div>
           </div>

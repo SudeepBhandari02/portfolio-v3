@@ -55,7 +55,7 @@ export function Work() {
         >
           {/* The window. It takes whatever height the title below leaves it. */}
           <div className="relative min-h-0 flex-1">
-            <div data-f-clip className="absolute inset-0 overflow-hidden bg-fg">
+            <div data-f-clip className="shot absolute inset-0 overflow-hidden">
               <img
                 data-f-img
                 src={AXION.chapters[0].image!.src}

@@ -87,7 +87,8 @@ export function Hero() {
           .to('[data-line="0"]', { xPercent: -6, duration: 1 }, 0)
           .to('[data-line="1"]', { xPercent: 6, duration: 1 }, 0)
           .to(cell.current, { scale: cover, duration: 0.85, ease: 'power2.in' }, 0.1)
-          .to(title.current, { color: '#000000', duration: 0.2 }, 0.55)
+          // Not a color tween: the title mixes toward black through a variable, so it follows the theme at rest.
+          .fromTo(title.current, { '--inked': 0 }, { '--inked': 1, duration: 0.2 }, 0.55)
 
         return () => {
           cancel()
@@ -114,8 +115,14 @@ export function Hero() {
         </p>
       </div>
 
-      <div className="gutter relative">
-        <h1 id="hero-title" ref={title} aria-label={PROFILE.name} className="t-mega relative z-10 w-fit select-none">
+      {/* On phones the navigator rail sits along the bottom edge; the name stops above it. */}
+      <div className="gutter relative mb-14 md:mb-0">
+        <h1
+          id="hero-title"
+          ref={title}
+          aria-label={PROFILE.name}
+          className="t-mega relative z-10 w-fit text-[color-mix(in_srgb,#000_calc(var(--inked,0)*100%),var(--color-fg))] select-none"
+        >
           {LINES.map((line, i) => (
             <span key={line} data-line={i} aria-hidden className="block whitespace-nowrap pt-[0.06em]">
               {line.split('').map((ch, j) => (
@@ -137,8 +144,8 @@ export function Hero() {
           ))}
         </h1>
 
-        <div data-h-rule className="mt-6 h-px bg-rule" />
-        <div data-h-out className="t-label mt-4 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 text-fg-muted">
+        <div data-h-rule className="mt-6 hidden h-px bg-rule md:block" />
+        <div data-h-out className="t-label mt-4 hidden flex-wrap items-center justify-between gap-x-8 gap-y-3 text-fg-muted md:flex">
           <span data-h-fade>SDE 1 at StackPro Technologies</span>
           <span data-h-fade className="hidden sm:inline">
             Portfolio · 2026
