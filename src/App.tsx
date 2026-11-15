@@ -5,7 +5,7 @@ import { QueryBar } from './components/QueryBar'
 import { Hero } from './sections/Hero'
 import { Tagline } from './sections/Tagline'
 import { Experience } from './sections/Experience'
-import { Systems } from './sections/Systems'
+import { Systems, SystemsEngine } from './sections/Systems'
 import { Projects } from './sections/Projects'
 import { Toolbox } from './sections/Toolbox'
 import { Education } from './sections/Education'
@@ -28,6 +28,7 @@ export default function App() {
           <Tagline />
           <Experience />
           <Systems />
+          <SystemsEngine />
           <Projects />
           <Toolbox />
           <Education />

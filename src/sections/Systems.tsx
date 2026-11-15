@@ -3,6 +3,7 @@ import { gsap, useGSAP, MOTION_OK } from '../lib/gsap'
 import { PIPELINE } from '../lib/content'
 import { Container, SectionHeader } from '../components/ui'
 import { Reveal } from '../components/Reveal'
+import { AdapterFigure } from '../figures'
 
 // Shown the way a query plan runs: leaves at the bottom, the answer on top.
 // While pinned you scroll down and the data climbs. Stage by stage, bottom to top.
@@ -125,6 +126,31 @@ export function Systems() {
         <p aria-hidden className="caption-4 flex items-center gap-3 font-mono text-fg-subtle">
           <span className="text-signal">↑</span> DRILL UP · back to everything
         </p>
+      </Container>
+    </section>
+  )
+}
+
+// Stage 3 up close, after the pinned plan: the query engine as a machine.
+const ENGINE_STAGE = PIPELINE[2]
+
+export function SystemsEngine() {
+  return (
+    <section aria-labelledby="engine-title" className="bg-ink-1 pb-24">
+      <Container className="grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-16">
+        <Reveal>
+          <p className="caption-4 flex items-center gap-3 font-mono text-fg-subtle">
+            <span className="text-signal">3</span> {ENGINE_STAGE.step.toLowerCase()} · up close
+          </p>
+          <h3 id="engine-title" className="heading-4 mt-6">
+            A new warehouse is
+            <br />
+            one more adapter
+          </h3>
+          <p className="body-3 mt-4 max-w-[480px] text-fg-muted">{ENGINE_STAGE.text}</p>
+          <p className="caption-4 mt-6 font-mono text-fg-subtle">Factory · Adapter · Snowflake · open slot</p>
+        </Reveal>
+        <AdapterFigure />
       </Container>
     </section>
   )

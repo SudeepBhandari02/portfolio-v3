@@ -4,6 +4,7 @@ import { gsap, useGSAP, MOTION_OK, MOTION_REDUCED } from '../lib/gsap'
 import { PROFILE, ROW_COUNT } from '../lib/content'
 import { scrollToId } from '../lib/scroll'
 import { Container, EmailButton, OpLabel } from '../components/ui'
+import { MailboxFigure } from '../figures'
 
 // Shades for the row cells, so the stack reads as many different things.
 const SHADES = ['bg-ink-3', 'bg-ink-4', 'bg-[#3e3e3e]', 'bg-ink-4', 'bg-ink-3', 'bg-[#5c5c5c]']
@@ -85,44 +86,47 @@ export function Contact() {
   return (
     <section id="contact" aria-labelledby="contact-title">
       <div ref={root} className="relative flex min-h-svh flex-col justify-center py-24">
-        <Container>
-          <OpLabel id="contact" />
+        <Container className="lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-center lg:gap-16">
+          <div>
+            <OpLabel id="contact" />
 
-          <p className="mt-8 flex items-baseline gap-4">
-            <span ref={anchor} aria-hidden className="size-6 shrink-0 self-center bg-signal" />
-            <span ref={count} className="heading-3 md:heading-1 font-mono tabular-nums">
-              {ROW_COUNT}
-            </span>
-            <span ref={unit} className="body-3 text-fg-muted">
-              rows on this page
-            </span>
-          </p>
-
-          <div className="relative mt-12">
-            {/* The rows. They sit over the final content and collapse into the cell above. */}
-            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10 flex max-w-[680px] flex-wrap gap-2">
-              {Array.from({ length: ROW_COUNT - 1 }, (_, i) => (
-                <span key={i} data-row-cell className={`size-4 md:size-6 ${SHADES[i % SHADES.length]}`} />
-              ))}
-            </div>
-
-            <h2 data-final id="contact-title" className="heading-3 md:heading-1 max-w-[680px]">
-              Working on something
-              <br />
-              that runs on data?
-            </h2>
-            <p data-final className="body-3 mt-6 max-w-[680px] text-fg-muted">
-              Email is the fastest way to reach me.
+            <p className="mt-8 flex items-baseline gap-4">
+              <span ref={anchor} aria-hidden className="size-6 shrink-0 self-center bg-signal" />
+              <span ref={count} className="heading-3 md:heading-1 font-mono tabular-nums">
+                {ROW_COUNT}
+              </span>
+              <span ref={unit} className="body-3 text-fg-muted">
+                rows on this page
+              </span>
             </p>
-            <div data-final className="mt-8 flex flex-wrap items-center gap-4">
-              <EmailButton />
-              <CopyEmail />
+
+            <div className="relative mt-12">
+              {/* The rows. They sit over the final content and collapse into the cell above. */}
+              <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10 flex max-w-[680px] flex-wrap gap-2">
+                {Array.from({ length: ROW_COUNT - 1 }, (_, i) => (
+                  <span key={i} data-row-cell className={`size-4 md:size-6 ${SHADES[i % SHADES.length]}`} />
+                ))}
+              </div>
+
+              <h2 data-final id="contact-title" className="heading-3 md:heading-1 max-w-[680px]">
+                Working on something
+                <br />
+                that runs on data?
+              </h2>
+              <p data-final className="body-3 mt-6 max-w-[680px] text-fg-muted">
+                Email is the fastest way to reach me.
+              </p>
+              <div data-final className="mt-8 flex flex-wrap items-center gap-4">
+                <EmailButton />
+                <CopyEmail />
+              </div>
+              <ul data-final className="mt-12 flex flex-wrap gap-2">
+                <SocialLink href={PROFILE.github} label="GitHub" icon={<GithubLogoIcon size={18} aria-hidden />} />
+                <SocialLink href={PROFILE.linkedin} label="LinkedIn" icon={<LinkedinLogoIcon size={18} aria-hidden />} />
+              </ul>
             </div>
-            <ul data-final className="mt-12 flex flex-wrap gap-2">
-              <SocialLink href={PROFILE.github} label="GitHub" icon={<GithubLogoIcon size={18} aria-hidden />} />
-              <SocialLink href={PROFILE.linkedin} label="LinkedIn" icon={<LinkedinLogoIcon size={18} aria-hidden />} />
-            </ul>
           </div>
+          <MailboxFigure className="hidden lg:block" trigger={root} />
         </Container>
       </div>
 

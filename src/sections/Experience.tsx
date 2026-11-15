@@ -4,6 +4,7 @@ import { gsap, useGSAP, MOTION_OK } from '../lib/gsap'
 import { CURRENT_ROLE, INTERNSHIP, ROUTE } from '../lib/content'
 import { Container, OpLabel, StatusBadge } from '../components/ui'
 import { Reveal } from '../components/Reveal'
+import { DrillFigure } from '../figures'
 
 const DEPTH_ROWS = CURRENT_ROLE.points.length + INTERNSHIP.items.length
 
@@ -14,15 +15,18 @@ export function Experience() {
       {/* One level down. The surface is lighter so you can feel the depth. */}
       <div className="bg-ink-1 pt-12">
         <Container>
-          <header className="max-w-[680px]">
-            <p className="caption-4 flex items-center gap-3 font-mono text-fg-subtle">
-              <span className="text-signal">↳</span> stackpro_technologies · {DEPTH_ROWS} rows
-            </p>
-            <h3 className="heading-4 md:heading-2 mt-6">StackPro Technologies</h3>
-            <p className="body-3 mt-4 text-fg-muted">
-              I joined as a full stack intern in Jun 2025 and became a Software Development Engineer in Jun 2026.
-            </p>
-          </header>
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
+            <header className="max-w-[680px]">
+              <p className="caption-4 flex items-center gap-3 font-mono text-fg-subtle">
+                <span className="text-signal">↳</span> stackpro_technologies · {DEPTH_ROWS} rows
+              </p>
+              <h3 className="heading-4 md:heading-2 mt-6">StackPro Technologies</h3>
+              <p className="body-3 mt-4 text-fg-muted">
+                I joined as a full stack intern in Jun 2025 and became a Software Development Engineer in Jun 2026.
+              </p>
+            </header>
+            <DrillFigure />
+          </div>
 
           <Reveal className="mt-16 grid gap-8 lg:grid-cols-[1fr_2fr] lg:gap-16">
             <div>

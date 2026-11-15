@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { ScrollTrigger, gsap, useGSAP, MOTION_OK, MOTION_REDUCED } from '../lib/gsap'
 import { Container, OpLabel } from '../components/ui'
+import { CatalogFigure } from '../figures'
 
 // Lines are broken where the thought breaks (B5).
 const LINES = [
@@ -45,28 +46,31 @@ export function Tagline() {
   let n = 0
   return (
     <section id="why" ref={root} aria-label="Why I do this" className="py-24">
-      <Container>
-        <OpLabel id="why" />
-        <p className="heading-3 md:heading-1 mt-8 max-w-[680px]">
-          {LINES.map((line, li) => (
-            <span key={li} className="md:block">
-              {line.split(' ').map((word) => {
-                const i = n++
-                return (
-                  <span
-                    key={i}
-                    ref={(el) => {
-                      if (el) words.current[i] = el
-                    }}
-                    className="tagline-word"
-                  >
-                    {word}{' '}
-                  </span>
-                )
-              })}
-            </span>
-          ))}
-        </p>
+      <Container className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-16">
+        <div>
+          <OpLabel id="why" />
+          <p className="heading-3 md:heading-1 mt-8 max-w-[680px]">
+            {LINES.map((line, li) => (
+              <span key={li} className="md:block">
+                {line.split(' ').map((word) => {
+                  const i = n++
+                  return (
+                    <span
+                      key={i}
+                      ref={(el) => {
+                        if (el) words.current[i] = el
+                      }}
+                      className="tagline-word"
+                    >
+                      {word}{' '}
+                    </span>
+                  )
+                })}
+              </span>
+            ))}
+          </p>
+        </div>
+        <CatalogFigure />
       </Container>
     </section>
   )

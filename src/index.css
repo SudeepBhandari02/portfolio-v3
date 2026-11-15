@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './components/iso/iso.css';
 
 /* Design tokens. Values follow the landing-page-design skill (B1 to B7). */
 @theme {
@@ -281,5 +282,88 @@
   .stage-card,
   .stage-panel > * {
     transition: none;
+  }
+}
+
+/* Isometric figures (anatomy kit). Tokens retuned to the site palette: the card is ink-1,
+   tones sit a few percent apart, and the one lit accent is the signal color. */
+.iso {
+  --anatomy-card: #181818;
+  --anatomy-paper: #181818;
+  --anatomy-face: #212121;
+  --anatomy-top: #212121;
+  --anatomy-shade-0: #111111;
+  --anatomy-shade-1: #141414;
+  --anatomy-shade-2: #181818;
+  --anatomy-shade-3: #1c1c1c;
+  --anatomy-lit-top: #2e1b11;
+  --anatomy-lit-shade: #22150d;
+  --anatomy-hi: #d6d6d6;
+  --anatomy-mid: #707070;
+  --anatomy-lo: #474747;
+  --anatomy-faint: #2f2f2f;
+  --anatomy-lit: var(--color-signal);
+  --anatomy-halo: #000000;
+  --anatomy-halo-opacity: 0.95;
+  --anatomy-text: var(--color-fg-muted);
+  --anatomy-muted: var(--color-fg-subtle);
+  --anatomy-mono: var(--font-mono);
+  --anatomy-void: #080808;
+}
+/* On the lighter ink-1 sections the card steps up one surface. */
+.iso[data-surface='raised'] {
+  --anatomy-card: #1f1f1f;
+  --anatomy-paper: #1f1f1f;
+  --anatomy-face: #282828;
+  --anatomy-top: #282828;
+  --anatomy-shade-0: #171717;
+  --anatomy-shade-1: #1b1b1b;
+  --anatomy-shade-2: #1f1f1f;
+  --anatomy-shade-3: #232323;
+  --anatomy-lit-top: #36200f;
+  --anatomy-lit-shade: #29180c;
+  --anatomy-lo: #4e4e4e;
+  --anatomy-faint: #363636;
+  --anatomy-void: #0e0e0e;
+}
+.iso-figure {
+  margin: 0;
+}
+.iso-plate {
+  border-radius: 16px;
+  padding: 44px 16px;
+  box-shadow: 0 0 0 1px var(--color-ink-3);
+  overflow: hidden;
+}
+.iso-plate-corner {
+  font-size: 11px;
+}
+.iso-legend {
+  font-size: 13px;
+  color: var(--color-fg-subtle);
+}
+.iso-key {
+  color: var(--color-fg-muted);
+}
+.iso-swatch[data-mark='lit'] path {
+  stroke: var(--color-signal);
+}
+.iso-void {
+  fill: var(--anatomy-void);
+  stroke: none;
+}
+.iso-dots[data-tone='signal'] circle,
+.iso-signal {
+  fill: var(--color-signal);
+  opacity: 1;
+}
+.iso-glow {
+  fill: var(--color-signal);
+  opacity: 0.35;
+  filter: blur(3px);
+}
+@media (max-width: 560px) {
+  .iso-plate {
+    padding: 40px 4px 64px;
   }
 }

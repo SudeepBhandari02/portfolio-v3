@@ -3,6 +3,7 @@ import { gsap, useGSAP, MOTION_OK } from '../lib/gsap'
 import { TOOLBOX } from '../lib/content'
 import { Container, SectionHeader } from '../components/ui'
 import { Reveal } from '../components/Reveal'
+import { SpindleFigure } from '../figures'
 
 const TOOL_COUNT = TOOLBOX.reduce((n, g) => n + g.tools.length, 0)
 
@@ -10,6 +11,7 @@ const TOOL_COUNT = TOOLBOX.reduce((n, g) => n + g.tools.length, 0)
 // and the scroll sorts them into their groups. Elsewhere they simply sit in their groups.
 export function Toolbox() {
   const root = useRef<HTMLElement>(null)
+  const stage = useRef<HTMLDivElement>(null)
   const board = useRef<HTMLDivElement>(null)
 
   useGSAP(
@@ -35,7 +37,7 @@ export function Toolbox() {
         const tl = gsap.timeline({
           defaults: { ease: 'none' },
           scrollTrigger: {
-            trigger: root.current,
+            trigger: stage.current,
             start: 'center center',
             end: '+=110%',
             pin: true,
@@ -69,35 +71,42 @@ export function Toolbox() {
   return (
     <section id="toolbox" ref={root} aria-labelledby="toolbox-title" className="py-24">
       <Container>
-        <SectionHeader id="toolbox" title={<span id="toolbox-title">Toolbox</span>}>
-          {TOOL_COUNT} tools, grouped by what they’re for.
-        </SectionHeader>
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-16">
+          <SectionHeader id="toolbox" title={<span id="toolbox-title">Toolbox</span>}>
+            {TOOL_COUNT} tools, grouped by what they’re for.
+          </SectionHeader>
+          <SpindleFigure />
+        </div>
+      </Container>
 
-        <Reveal>
-          <div ref={board} className="relative mt-16 grid gap-x-12 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
-            {TOOLBOX.map((g) => (
-              <div key={g.line}>
-                <div data-group-head className="flex items-baseline justify-between gap-4 border-b border-ink-3 pb-2">
-                  <h3 className="title-3">{g.category}</h3>
-                  <span className="caption-4 font-mono text-fg-subtle">
-                    {g.line} · {g.tools.length}
-                  </span>
+      <Container>
+        <div ref={stage} className="pt-8">
+          <Reveal>
+            <div ref={board} className="relative mt-16 grid gap-x-12 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+              {TOOLBOX.map((g) => (
+                <div key={g.line}>
+                  <div data-group-head className="flex items-baseline justify-between gap-4 border-b border-ink-3 pb-2">
+                    <h3 className="title-3">{g.category}</h3>
+                    <span className="caption-4 font-mono text-fg-subtle">
+                      {g.line} · {g.tools.length}
+                    </span>
+                  </div>
+                  <ul className="mt-4 flex flex-wrap gap-1">
+                    {g.tools.map((t) => (
+                      <li
+                        key={t}
+                        data-tile
+                        className="caption-1 border border-ink-3 bg-ink-1 px-2 py-1 font-mono text-fg-muted transition-colors duration-300 ease-base hover:border-signal hover:text-fg"
+                      >
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="mt-4 flex flex-wrap gap-1">
-                  {g.tools.map((t) => (
-                    <li
-                      key={t}
-                      data-tile
-                      className="caption-1 border border-ink-3 bg-ink-1 px-2 py-1 font-mono text-fg-muted transition-colors duration-300 ease-base hover:border-signal hover:text-fg"
-                    >
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+              ))}
+            </div>
+          </Reveal>
+        </div>
       </Container>
     </section>
   )
