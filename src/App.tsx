@@ -1,41 +1,33 @@
-import { MotionConfig } from 'motion/react'
 import { SmoothScroll } from './components/SmoothScroll'
 import { Nav } from './components/Nav'
-import { QueryBar } from './components/QueryBar'
-import { Hero } from './sections/Hero'
-import { Tagline } from './sections/Tagline'
-import { Experience } from './sections/Experience'
-import { Systems, SystemsEngine } from './sections/Systems'
-import { Projects } from './sections/Projects'
-import { Toolbox } from './sections/Toolbox'
-import { Education } from './sections/Education'
-import { Contact } from './sections/Contact'
+import { Cursor } from './components/Cursor'
+import { Loader } from './components/Loader'
+import { Transition } from './components/Transition'
+import { Home } from './pages/Home'
+import { Axion } from './pages/Axion'
+import { useRoute } from './lib/router'
 
 export default function App() {
+  const route = useRoute()
   return (
-    // reducedMotion="user": Motion drops movement and keeps opacity for reduced motion users (B7).
-    <MotionConfig reducedMotion="user">
-      <SmoothScroll>
-        <a
-          href="#main"
-          className="button-sm fixed top-4 left-4 z-[60] -translate-y-24 rounded-full bg-fg px-3 py-2 text-ink-0 focus:translate-y-0"
-        >
-          Skip to content
-        </a>
-        <Nav />
-        <main id="main" tabIndex={-1} className="outline-none">
-          <Hero />
-          <Tagline />
-          <Experience />
-          <Systems />
-          <SystemsEngine />
-          <Projects />
-          <Toolbox />
-          <Education />
-          <Contact />
-        </main>
-        <QueryBar />
-      </SmoothScroll>
-    </MotionConfig>
+    <SmoothScroll>
+      {/* A button, not an anchor: the hash belongs to the router. */}
+      <button
+        type="button"
+        data-chrome
+        onClick={() => document.getElementById('main')?.focus()}
+        className="btn fixed top-3 left-3 z-[110] -translate-y-24 focus:translate-y-0"
+      >
+        Skip to content
+      </button>
+      <Nav />
+      {/* key: a route change remounts the page, so every ScrollTrigger of the old one is torn down first. */}
+      <main id="main" key={route} tabIndex={-1} className="outline-none">
+        {route === '/work/axionbi' ? <Axion /> : <Home />}
+      </main>
+      <Cursor />
+      <Transition />
+      <Loader />
+    </SmoothScroll>
   )
 }

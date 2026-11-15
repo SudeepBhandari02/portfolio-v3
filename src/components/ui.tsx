@@ -1,84 +1,105 @@
-import type { ReactNode } from 'react'
-import { EnvelopeSimpleIcon } from '@phosphor-icons/react'
-import { PROFILE, STOPS, type StopId } from '../lib/content'
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
+import { gsap, reducedMotion } from '../lib/gsap'
+import { navigate, type Route } from '../lib/router'
 
-// Horizontal page gutter.
-export function Container({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <div className={`px-6 md:px-12 lg:px-24 ${className}`}>{children}</div>
-}
-
-export function stopNumber(id: StopId) {
-  const i = STOPS.findIndex((s) => s.id === id)
-  return String(i + 1).padStart(2, '0')
-}
-
-// The site's one recurring shape: a single square data cell.
-export function Cell({ className = '' }: { className?: string }) {
-  return <span aria-hidden className={`inline-block size-2 shrink-0 bg-signal ${className}`} />
-}
-
-// SQL keywords in full white, identifiers muted. Used by the query bar and section labels.
-export function QueryText({ text }: { text: string }) {
+export function Arrow({ className = '', dir = 'ne' }: { className?: string; dir?: 'ne' | 'e' | 'w' | 's' }) {
+  const rot = { ne: -45, e: 0, w: 180, s: 90 }[dir]
   return (
-    <>
-      {text.split(/(\s+)/).map((tok, i) =>
-        /^[A-Z*()0-9]+$/.test(tok) ? (
-          <span key={i} className="text-fg">
-            {tok}
-          </span>
-        ) : (
-          <span key={i}>{tok}</span>
-        ),
-      )}
-    </>
+    <svg
+      aria-hidden
+      viewBox="0 0 16 16"
+      className={`btn-arrow size-[1em] shrink-0 ${className}`}
+      style={{ rotate: `${rot}deg` }}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="square"
+    >
+      <path d="M2 8h11M8.5 3.5 13 8l-4.5 4.5" />
+    </svg>
   )
 }
 
-// "03  DRILL INTO stackpro": which operation this section performs.
-export function OpLabel({ id }: { id: StopId }) {
-  const stop = STOPS.find((s) => s.id === id)!
+// "01 — Selected work": the small mono line that opens a section.
+export function Label({ index, children, className = '' }: { index?: string; children: ReactNode; className?: string }) {
   return (
-    <p className="caption-4 flex items-center gap-3 font-mono text-fg-subtle">
-      <Cell />
-      <span className="text-signal">{stopNumber(id)}</span>
-      <span>
-        <QueryText text={stop.query} />
-      </span>
+    <p className={`t-label flex items-center gap-3 ${className}`}>
+      <span className="cell" />
+      {index && <span className="nums">{index}</span>}
+      <span>{children}</span>
     </p>
   )
 }
 
-export function SectionHeader({ id, title, children }: { id: StopId; title: ReactNode; children?: ReactNode }) {
+// Link to another page. Real href for middle click and no-JS; the click runs the page transition.
+export function RouteLink({
+  to,
+  scrollTo,
+  children,
+  ...rest
+}: {
+  to: Route
+  scrollTo?: string
+  children: ReactNode
+} & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>) {
+  const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return
+    e.preventDefault()
+    navigate(to, { scrollTo })
+  }
   return (
-    <header className="max-w-[680px]">
-      <OpLabel id={id} />
-      <h2 className="heading-4 md:heading-2 mt-6">{title}</h2>
-      {children && <p className="body-3 mt-4 text-fg-muted">{children}</p>}
-    </header>
-  )
-}
-
-// Primary action. Same everywhere it appears (A2: final CTA identical to the top).
-export function EmailButton({ className = '' }: { className?: string }) {
-  return (
-    <a
-      href={`mailto:${PROFILE.email}`}
-      className={`button-md inline-flex items-center gap-2 rounded-full bg-fg px-3 py-2 text-ink-0 transition-[translate,scale,background-color] duration-300 ease-base hover:-translate-y-0.5 hover:bg-[#e6e6e6] active:translate-y-0 active:scale-[0.98] ${className}`}
-    >
-      <EnvelopeSimpleIcon size={18} weight="bold" aria-hidden />
-      Email me
+    <a href={`#${to}`} onClick={onClick} {...rest}>
+      {children}
     </a>
   )
 }
 
-export function StatusBadge({ children }: { children: ReactNode }) {
+// Pulls its child toward the pointer. Desktop pointers only.
+export function Magnetic({ children, strength = 0.35, className = '' }: { children: ReactNode; strength?: number; className?: string }) {
+  const el = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    const node = el.current!
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches || reducedMotion()) return
+    const xTo = gsap.quickTo(node, 'x', { duration: 0.6, ease: 'power3' })
+    const yTo = gsap.quickTo(node, 'y', { duration: 0.6, ease: 'power3' })
+    const move = (e: PointerEvent) => {
+      const r = node.getBoundingClientRect()
+      xTo((e.clientX - (r.left + r.width / 2)) * strength)
+      yTo((e.clientY - (r.top + r.height / 2)) * strength)
+    }
+    const leave = () => {
+      xTo(0)
+      yTo(0)
+    }
+    node.addEventListener('pointermove', move)
+    node.addEventListener('pointerleave', leave)
+    return () => {
+      node.removeEventListener('pointermove', move)
+      node.removeEventListener('pointerleave', leave)
+    }
+  }, [strength])
   return (
-    <span className="caption-3 inline-flex items-center gap-2 rounded-full bg-ink-3 px-2 py-0.5 text-fg">
-      <span aria-hidden className="relative flex size-2">
-        <span className="absolute inset-0 animate-signal bg-signal motion-reduce:animate-none" />
-        <span className="relative size-2 bg-signal" />
-      </span>
+    <span ref={el} className={`inline-block ${className}`}>
       {children}
+    </span>
+  )
+}
+
+const timeFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })
+
+// Local time in Bengaluru, with a blinking separator.
+export function Clock() {
+  const [now, setNow] = useState(() => timeFmt.format(new Date()))
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(timeFmt.format(new Date())), 15_000)
+    return () => window.clearInterval(id)
+  }, [])
+  const [h, m] = now.split(':')
+  return (
+    <span className="nums">
+      {h}
+      <span className="animate-blink">:</span>
+      {m} IST
     </span>
   )
 }

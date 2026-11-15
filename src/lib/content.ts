@@ -9,36 +9,6 @@ export const PROFILE = {
   linkedin: 'https://www.linkedin.com/in/sudeepbhandari02',
 }
 
-// Every section runs one operation on the page as you scroll. Ids match section ids.
-// The query is what the fixed query bar types when that section is on screen.
-export const STOPS = [
-  { id: 'top', label: 'Intro', query: 'SELECT * FROM raw_tables' },
-  { id: 'why', label: 'Why', query: 'SELECT answer FROM your_data' },
-  { id: 'work', label: 'StackPro', query: 'DRILL INTO stackpro' },
-  { id: 'systems', label: 'Systems', query: 'EXPLAIN ANALYZE pipeline' },
-  { id: 'projects', label: 'Projects', query: 'SELECT * FROM projects' },
-  { id: 'toolbox', label: 'Toolbox', query: 'GROUP BY category' },
-  { id: 'education', label: 'Education', query: 'ORDER BY year DESC' },
-  { id: 'contact', label: 'Contact', query: 'SELECT * FROM above LIMIT 1' },
-] as const
-
-export type StopId = (typeof STOPS)[number]['id']
-
-export const NAV_LINKS: { id: StopId; label: string }[] = [
-  { id: 'work', label: 'Work' },
-  { id: 'systems', label: 'Systems' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'toolbox', label: 'Toolbox' },
-  { id: 'contact', label: 'Contact' },
-]
-
-export const ROUTE = [
-  { year: '2020', place: 'Siddapur', title: 'Pre University Course', org: 'Government PU College' },
-  { year: '2022', place: 'Bengaluru', title: 'B.E. Computer Science', org: 'Acharya Institute of Technology' },
-  { year: 'Jun 2025', place: 'StackPro', title: 'Full Stack Developer Intern', org: 'StackPro Technologies' },
-  { year: 'Jun 2026', place: 'StackPro', title: 'Software Development Engineer 1', org: 'StackPro Technologies', current: true },
-]
-
 export const CURRENT_ROLE = {
   title: 'Software Development Engineer 1',
   dates: 'Jun 2026 to present',
@@ -100,33 +70,6 @@ export const INTERNSHIP = {
   ],
 }
 
-export const PIPELINE = [
-  {
-    step: 'Schemas',
-    title: 'Metadata mapping agents',
-    text: 'Agents built with Google ADK read table schemas from SAP and Odoo, normalize and enrich them, and write warehouse specific queries.',
-    chips: ['SAP', 'Odoo', 'Google ADK'],
-  },
-  {
-    step: 'Meaning',
-    title: 'Semantic layer',
-    text: 'Raw schemas become reusable metrics, dimensions and relationships, so analytics can be self serve.',
-    chips: ['Metrics', 'Dimensions', 'Relationships'],
-  },
-  {
-    step: 'Execution',
-    title: 'Query engine',
-    text: 'Factory and Adapter patterns pick the right warehouse. Adding one means writing an adapter. Nothing else changes.',
-    chips: ['Snowflake', 'Next adapter'],
-  },
-  {
-    step: 'Answers',
-    title: 'Embeddable dashboards',
-    text: 'Aggregations, filters and drill downs from a BI function library, mixed with live REST API data inside client products.',
-    chips: ['Charts', 'Drill downs', 'REST'],
-  },
-]
-
 export const FEATURED_PROJECTS = [
   {
     name: 'WayGo',
@@ -138,7 +81,6 @@ export const FEATURED_PROJECTS = [
       'WebSocket driven ETAs behind a step by step journey view and a full map mode',
     ],
     stack: ['React Native', 'FastAPI', 'Zustand', 'TanStack Query', 'WebSockets'],
-    visual: 'route' as const,
   },
   {
     name: 'KLYN',
@@ -147,7 +89,6 @@ export const FEATURED_PROJECTS = [
       'Personalized AI tutoring. It works out what a learner already knows, generates a custom course, then adapts concept by concept against a persistent learner knowledge model.',
     points: ['Wrote the Phase 1 product spec', 'Building the LangGraph tutoring agent'],
     stack: ['React Native', 'FastAPI', 'LangGraph'],
-    visual: 'knowledge' as const,
   },
 ]
 
@@ -178,14 +119,96 @@ export const CERTIFICATIONS = [
   { title: 'Agile with Jira', issuer: 'Coursera' },
 ]
 
-// Every row of content on the page. The contact section counts these down to one.
-export const ROW_COUNT =
-  ROUTE.length +
-  CURRENT_ROLE.points.length +
-  INTERNSHIP.items.length +
-  PIPELINE.length +
-  FEATURED_PROJECTS.length +
-  OTHER_PROJECTS.length +
-  TOOLBOX.reduce((n, g) => n + g.tools.length, 0) +
-  EDUCATION.length +
-  CERTIFICATIONS.length
+export const NAV_LINKS = [
+  { id: 'work', label: 'Work' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'toolbox', label: 'Toolbox' },
+  { id: 'contact', label: 'Contact' },
+] as const
+
+// AxionBI case study. Every number here is counted from the repository or taken from the
+// product's demo warehouse; nothing is a customer claim.
+export const AXION = {
+  name: 'AxionBI',
+  line: 'A semantic layer first BI tool. Define a number once, and every dashboard answers with it.',
+  meta: [
+    { k: 'Role', v: 'Product, design and engineering. Solo.' },
+    { k: 'Timeline', v: 'Oct 2026 to present' },
+    { k: 'Built at', v: 'StackPro Labs' },
+    { k: 'Status', v: 'In active development' },
+  ],
+  intro:
+    'Most BI tools let anyone write the SQL behind a chart, so two dashboards can show two different revenues and both look right. AxionBI turns that around. You connect a warehouse, model its tables and relationships, define measures and dimensions once, then build dashboards by dropping those fields onto charts. Nobody hand writes the query behind a tile.',
+  problem: {
+    wrong: '40,647,891',
+    right: '40,091,424',
+    gap: '556,467',
+    captions: [
+      'Same question. Two answers.',
+      'The gap is cancelled orders. One chart counted them.',
+      'So the rule is written once, in the model.',
+      'Same number. Every chart.',
+    ],
+  },
+  pipeline: [
+    { step: 'Connection', text: 'A read only identity on the customer warehouse. Credentials are encrypted at rest and never returned by the API.', code: 'postgres · snowflake · bigquery\n+ 7 more behind one interface' },
+    { step: 'Data model', text: 'Tables and relationships on a canvas, with profiling that verifies keys and grain before a join is trusted.', code: 'orders  N : 1  channels\norder_lines  N : 1  orders' },
+    { step: 'Measures and dimensions', text: 'The definitions. Written once, versioned, published, and certified when they are the trusted answer.', code: 'net_revenue =\n  SUM(line_amount)\n  WHERE order_status IS NOT Cancelled' },
+    { step: 'Dashboard tile', text: 'A tile holds no SQL. It is a small request for fields that already exist in the model.', code: '{ dimensions: [channel],\n  measures: [net_revenue],\n  filters: [] }' },
+    { step: 'Semantic query', text: 'The request is resolved against the published model: which tables, which joins, which grain.', code: 'resolve fields\nplan joins\nstitch grains' },
+    { step: 'CQO', text: 'An internal query object. Every warehouse dialect compiles from this one shape.', code: 'validate\nmerge filters\nrewrite per dialect' },
+    { step: 'SQL', text: 'Guarded output: SELECT only, a statement timeout and a row cap on every run.', code: 'SELECT c.channel_name,\n       SUM(l.line_amount)\nFROM order_lines l ...' },
+    { step: 'Warehouse', text: 'The query runs where the data already lives. Nothing is copied out.', code: 'rows back to the tile\ncached per published version' },
+  ],
+  chapters: [
+    {
+      title: 'Model builder',
+      text: 'A canvas for tables and relationships, with the evidence beside it. Profiling checks keys and grain, join discovery proposes relationships with the numbers that support them, and a formula editor covers measures, time fields and fiscal calendars. Work happens in a draft and ships as a published version.',
+      points: ['Draft and publish versions', 'Key and grain verification', 'Join discovery with evidence', 'Formula editor and time intelligence'],
+      image: { src: '/work/axionbi/model-builder.webp', alt: 'AxionBI model builder: three tables joined on a canvas, with the Net revenue measure open in the inspector.', w: 2400, h: 1221 },
+    },
+    {
+      title: 'Query engine',
+      text: 'A framework free compiler that turns a semantic query into SQL for ten warehouses. It started as a port of an earlier in house engine and grew from there: multi grain stitching, bridge tables for many to many joins, derived SQL tables, and time measures such as to date, rolling and previous period.',
+      points: ['Semantic query to CQO to SQL', 'Ten warehouse dialects', 'SELECT only guardrails, timeouts, row caps', 'A purity test keeps app code out of the engine'],
+    },
+    {
+      title: 'Dashboards',
+      text: 'A builder where a chart is made by dropping governed fields into wells. Seven chart types, eight filter types, versioned autosave, themes with readability checks, exports to PDF, PNG and XLSX, and share links with optional password and expiry.',
+      points: ['Grid canvas with drop wells', 'Top N with Other, drill and filters', 'Themes, exports, share links', 'Tiles query the published model'],
+      image: { src: '/work/axionbi/dashboard.webp', alt: 'AxionBI Sales overview dashboard: a net revenue total, revenue by channel and revenue by month.', w: 2400, h: 834 },
+    },
+    {
+      title: 'Stacker, the AI',
+      text: 'Three LangGraph agents share one toolbox: one builds data models, one builds dashboards, one answers viewers in a read only panel. Stacker never edits directly. It proposes a change set and a person approves each item. Evals run against real models with code checks and a grader.',
+      points: ['Change sets with per item approval', '28 kinds of model edit it can propose', 'Streaming over SSE, Postgres checkpoints', 'OpenAI, Anthropic and Google behind one profile'],
+    },
+    {
+      title: 'Warehouse change detection',
+      text: 'AxionBI watches the warehouse itself. A scan reads table and column names, never rows, and notices what was added, removed, retyped or renamed. Lineage turns that into impact: which published models, fields and dashboards are hit. Each change comes with one suggested fix, and fixed is proven by the system instead of clicked.',
+      points: ['Scans on demand, on schedule, or after a chart fails', 'Impact through semantic lineage', 'One suggested fix per change', 'Quick fix publishes without dragging in draft work'],
+    },
+    {
+      title: 'Platform',
+      text: 'The parts nobody screenshots. Multi tenant orgs, invite only sign in with server side sessions, four roles checked as named permissions on every route and every AI tool, feature flags and limits per org, metered AI credits, a platform console for operators and a developer console with request waterfalls.',
+      points: ['Org scoping on every query', 'RBAC on routes and AI tools', 'Entitlements and AI credits', 'Eleven guided product tours'],
+    },
+  ],
+  stats: [
+    { n: 1, suffix: '', label: 'Developer' },
+    { n: 10, suffix: '', label: 'Warehouses supported' },
+    { n: 257, suffix: '', label: 'API operations' },
+    { n: 1700, suffix: '+', label: 'Server tests' },
+    { n: 630, suffix: '+', label: 'Web tests' },
+    { n: 40, suffix: '', label: 'Database migrations' },
+    { n: 147, suffix: '', label: 'Commits so far' },
+    { n: 170, suffix: 'k', label: 'Lines of Python and TypeScript' },
+  ],
+  warehouses: ['PostgreSQL', 'Snowflake', 'BigQuery', 'Redshift', 'Databricks', 'Trino', 'Athena', 'MySQL', 'ClickHouse', 'MotherDuck'],
+  stack: [
+    { k: 'API', v: 'Python 3.12, FastAPI, SQLAlchemy 2, Alembic, Pydantic v2, Redis, Celery, sqlglot' },
+    { k: 'AI', v: 'LangGraph with a Postgres checkpointer, provider agnostic model profiles, evals' },
+    { k: 'Web', v: 'React 19, TypeScript, Vite, Tailwind v4, TanStack Query, Router and Table, Zustand, React Aria, Recharts' },
+    { k: 'Contract', v: 'OpenAPI is the source of truth. The web client is generated from it.' },
+  ],
+}

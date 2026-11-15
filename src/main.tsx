@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import '@fontsource-variable/geist'
+// Archivo with its width axis: the whole type system leans on it.
+import '@fontsource-variable/archivo/wdth.css'
 import '@fontsource-variable/geist-mono'
 import './index.css'
 import App from './App'

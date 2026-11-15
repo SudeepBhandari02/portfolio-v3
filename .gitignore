@@ -1,6 +1,33 @@
+# Dependencies
 node_modules
+.pnpm-store
+
+# Build output
 dist
 dist-ssr
+*.tsbuildinfo
+.vite
+
+# Environment and local overrides
+.env
+.env.*
+!.env.example
 *.local
-.DS_Store
+
+# Logs
 *.log
+
+# Agent tooling state (ruflo / claude-flow runtime data, design tool scratch)
+.claude-flow/
+.swarm/
+.impeccable/
+agentdb.rvf*
+ruvector.db
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.swp

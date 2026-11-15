@@ -1,199 +1,96 @@
-import { useRef, useState, type MouseEvent, type ReactNode } from 'react'
-import { ArrowUpIcon, ArrowUpRightIcon, CheckIcon, CopyIcon, GithubLogoIcon, LinkedinLogoIcon } from '@phosphor-icons/react'
-import { gsap, useGSAP, MOTION_OK, MOTION_REDUCED } from '../lib/gsap'
-import { PROFILE, ROW_COUNT } from '../lib/content'
-import { scrollToId } from '../lib/scroll'
-import { Container, EmailButton, OpLabel } from '../components/ui'
-import { MailboxFigure } from '../figures'
+import { useRef } from 'react'
+import { gsap, useGSAP, MOTION_OK } from '../lib/gsap'
+import { PROFILE } from '../lib/content'
+import { goToSection } from '../lib/scroll'
+import { Arrow, Clock, Label, Magnetic } from '../components/ui'
 
-// Shades for the row cells, so the stack reads as many different things.
-const SHADES = ['bg-ink-3', 'bg-ink-4', 'bg-[#3e3e3e]', 'bg-ink-4', 'bg-ink-3', 'bg-[#5c5c5c]']
+const LINKS = [
+  { label: 'GitHub', href: PROFILE.github, handle: 'SudeepBhandari02' },
+  { label: 'LinkedIn', href: PROFILE.linkedin, handle: 'sudeepbhandari02' },
+]
 
-// LIMIT 1. Every row on the page is a cell. The scroll collapses all of them into the one
-// cell left standing, the count runs down to 1, and that last row is the inbox.
-export function Contact() {
-  const root = useRef<HTMLDivElement>(null)
-  const anchor = useRef<HTMLSpanElement>(null)
-  const count = useRef<HTMLSpanElement>(null)
-  const unit = useRef<HTMLSpanElement>(null)
+// The page ends where it began: on the orange field. Shared by the home page and the case study.
+export function Contact({ index = '05' }: { index?: string }) {
+  const root = useRef<HTMLElement>(null)
 
   useGSAP(
     () => {
-      const cells = gsap.utils.toArray<HTMLElement>('[data-row-cell]', root.current)
-      const setCount = (n: number) => {
-        if (count.current) count.current.textContent = String(n)
-        if (unit.current) unit.current.textContent = n === 1 ? 'row left: my inbox' : 'rows on this page'
-      }
-
       const mm = gsap.matchMedia()
       mm.add(MOTION_OK, () => {
-        // Distance from each cell to the anchor cell, measured with offsets (transform safe).
-        const pos = (el: HTMLElement) => {
-          let x = 0
-          let y = 0
-          let n: HTMLElement | null = el
-          while (n && n !== root.current) {
-            x += n.offsetLeft
-            y += n.offsetTop
-            n = n.offsetParent as HTMLElement | null
-          }
-          return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 }
-        }
-        const delta = (i: number) => {
-          const a = pos(anchor.current!)
-          const c = pos(cells[i])
-          return { x: a.x - c.x, y: a.y - c.y }
-        }
-
-        const proxy = { p: 0 }
-        const tl = gsap.timeline({
-          defaults: { ease: 'none' },
-          scrollTrigger: {
-            trigger: root.current,
-            start: 'top top',
-            end: '+=130%',
-            pin: true,
-            scrub: 0.6,
-            invalidateOnRefresh: true,
-          },
-        })
-        tl.fromTo(
-          cells,
-          { x: 0, y: 0, opacity: 1, scale: 1 },
+        // The headline arrives thin and wide and tightens into the heavy set as it rises into view.
+        gsap.fromTo(
+          '[data-c-char]',
+          { '--wdth': 125, '--wght': 180 },
           {
-            x: (i: number) => delta(i).x,
-            y: (i: number) => delta(i).y,
-            scale: 0.4,
-            opacity: 0,
-            ease: 'power2.in',
-            duration: 0.25,
-            stagger: { each: 0.4 / cells.length, from: 'end' },
+            '--wdth': 62,
+            '--wght': 800,
+            ease: 'none',
+            stagger: 0.06,
+            scrollTrigger: { trigger: '[data-c-title]', start: 'top 95%', end: 'top 30%', scrub: 0.6 },
           },
-          0,
         )
-        tl.to(proxy, { p: 1, duration: 0.65, onUpdate: () => setCount(Math.round(ROW_COUNT - (ROW_COUNT - 1) * proxy.p)) }, 0)
-        tl.fromTo('[data-final]', { opacity: 0, y: 32 }, { opacity: 1, y: 0, ease: 'base', duration: 0.2, stagger: 0.05 }, 0.66)
-        setCount(ROW_COUNT)
-      })
-      mm.add(MOTION_REDUCED, () => {
-        gsap.set(cells, { opacity: 0 })
-        setCount(1)
       })
     },
     { scope: root },
   )
 
   return (
-    <section id="contact" aria-labelledby="contact-title">
-      <div ref={root} className="relative flex min-h-svh flex-col justify-center py-24">
-        <Container className="lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-center lg:gap-16">
-          <div>
-            <OpLabel id="contact" />
-
-            <p className="mt-8 flex items-baseline gap-4">
-              <span ref={anchor} aria-hidden className="size-6 shrink-0 self-center bg-signal" />
-              <span ref={count} className="heading-3 md:heading-1 font-mono tabular-nums">
-                {ROW_COUNT}
-              </span>
-              <span ref={unit} className="body-3 text-fg-muted">
-                rows on this page
-              </span>
-            </p>
-
-            <div className="relative mt-12">
-              {/* The rows. They sit over the final content and collapse into the cell above. */}
-              <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10 flex max-w-[680px] flex-wrap gap-2">
-                {Array.from({ length: ROW_COUNT - 1 }, (_, i) => (
-                  <span key={i} data-row-cell className={`size-4 md:size-6 ${SHADES[i % SHADES.length]}`} />
-                ))}
-              </div>
-
-              <h2 data-final id="contact-title" className="heading-3 md:heading-1 max-w-[680px]">
-                Working on something
-                <br />
-                that runs on data?
-              </h2>
-              <p data-final className="body-3 mt-6 max-w-[680px] text-fg-muted">
-                Email is the fastest way to reach me.
-              </p>
-              <div data-final className="mt-8 flex flex-wrap items-center gap-4">
-                <EmailButton />
-                <CopyEmail />
-              </div>
-              <ul data-final className="mt-12 flex flex-wrap gap-2">
-                <SocialLink href={PROFILE.github} label="GitHub" icon={<GithubLogoIcon size={18} aria-hidden />} />
-                <SocialLink href={PROFILE.linkedin} label="LinkedIn" icon={<LinkedinLogoIcon size={18} aria-hidden />} />
-              </ul>
-            </div>
-          </div>
-          <MailboxFigure className="hidden lg:block" trigger={root} />
-        </Container>
+    <section id="contact" ref={root} data-nav="ink" aria-labelledby="contact-title" className="on-signal relative flex min-h-svh flex-col justify-between pt-[8vh]">
+      <div className="gutter grid grid-cols-12 gap-x-4">
+        <div className="col-span-12 md:col-span-3">
+          <Label index={index}>Contact</Label>
+        </div>
+        <p data-reveal="lines" className="t-lead col-span-12 mt-6 max-w-[30ch] md:col-span-6 md:mt-0">
+          Building something with data in it? I’d like to hear about it.
+        </p>
       </div>
 
-      <footer className="border border-ink-3 bg-ink-1 pb-16">
-        <Container className="flex flex-wrap items-center justify-between gap-4 py-6">
-          <p className="caption-2 text-fg-subtle">© 2026 {PROFILE.name}. Built with React, GSAP and Motion.</p>
-          <a
-            href="#top"
-            onClick={(e: MouseEvent) => {
-              e.preventDefault()
-              scrollToId('top')
-            }}
-            className="caption-1 inline-flex items-center gap-2 rounded-full px-3 py-2 text-fg-muted transition-colors duration-300 ease-base hover:bg-ink-3 hover:text-fg active:scale-[0.98]"
-          >
-            <ArrowUpIcon size={16} aria-hidden />
-            Back to the raw tables
-          </a>
-        </Container>
+      <div className="gutter mt-[8vh]">
+        <h2 id="contact-title" data-c-title aria-label="Let’s talk" className="t-mega overflow-hidden whitespace-nowrap">
+          {'Let’s talk'.split('').map((ch, i) => (
+            <span key={i} data-c-char aria-hidden className="vf inline-block">
+              {ch === ' ' ? '\u00A0' : ch}
+            </span>
+          ))}
+        </h2>
+
+        <div className="mt-[6vh] grid grid-cols-12 gap-x-4 gap-y-10">
+          <div className="col-span-12 md:col-span-7">
+            <Magnetic strength={0.15}>
+              <a
+                href={`mailto:${PROFILE.email}`}
+                data-cursor="Mail"
+                className="link inline-flex items-center gap-[0.4em] text-[clamp(1.05rem,3vw,3rem)] leading-tight font-semibold tracking-[-0.02em] whitespace-nowrap [font-stretch:88%]"
+              >
+                {PROFILE.email}
+                <Arrow />
+              </a>
+            </Magnetic>
+          </div>
+          <ul className="col-span-12 md:col-span-5">
+            {LINKS.map((l) => (
+              <li key={l.label}>
+                <a href={l.href} target="_blank" rel="noreferrer" className="row rule-t flex items-baseline justify-between gap-6 px-3 py-4">
+                  <span className="vf row-name text-[clamp(1.5rem,2.6vw,2.5rem)] leading-none uppercase [--wdth:70] [--wght:720]">{l.label}</span>
+                  <span className="t-label flex items-center gap-2">
+                    {l.handle} <Arrow />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <footer className="gutter rule-t t-label mt-[10vh] flex flex-wrap items-center justify-between gap-x-8 gap-y-3 py-5">
+        <span>© 2026 {PROFILE.name}</span>
+        <span>
+          Bengaluru · <Clock />
+        </span>
+        <button type="button" onClick={() => goToSection('top')} className="link inline-flex items-center gap-2 whitespace-nowrap">
+          Back to top <Arrow dir="ne" />
+        </button>
       </footer>
     </section>
-  )
-}
-
-function CopyEmail() {
-  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle')
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(PROFILE.email)
-      setState('copied')
-    } catch {
-      setState('failed')
-    }
-    setTimeout(() => setState('idle'), 2400)
-  }
-
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <button
-        type="button"
-        onClick={copy}
-        className="button-md inline-flex items-center gap-2 rounded-full border border-ink-4 px-3 py-2 text-fg transition-[translate,scale,background-color] duration-300 ease-base hover:-translate-y-0.5 hover:bg-ink-2 active:translate-y-0 active:scale-[0.98]"
-      >
-        {state === 'copied' ? <CheckIcon size={18} aria-hidden /> : <CopyIcon size={18} aria-hidden />}
-        <span className="font-mono">{PROFILE.email}</span>
-      </button>
-      <p role="status" className="caption-2 text-fg-muted">
-        {state === 'copied' && 'Email copied'}
-        {state === 'failed' && 'Copy failed. Select the address instead.'}
-      </p>
-    </div>
-  )
-}
-
-function SocialLink({ href, label, icon }: { href: string; label: string; icon: ReactNode }) {
-  return (
-    <li>
-      <a
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-        className="title-4 inline-flex items-center gap-2 rounded-full bg-ink-1 px-3 py-2 text-fg-muted transition-[translate,background-color,color] duration-300 ease-base hover:-translate-y-0.5 hover:bg-ink-2 hover:text-fg active:translate-y-0"
-      >
-        {icon}
-        {label}
-        <ArrowUpRightIcon size={14} aria-hidden />
-      </a>
-    </li>
   )
 }

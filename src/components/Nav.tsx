@@ -1,163 +1,164 @@
-import { useEffect, useRef, useState, type MouseEvent } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import { NAV_LINKS, PROFILE, STOPS } from '../lib/content'
-import { useActiveStop } from '../lib/active-stop'
-import { scroller, scrollToId } from '../lib/scroll'
-import { BASE_EASE } from './Reveal'
+import { useEffect, useRef, useState } from 'react'
+import { gsap, ScrollTrigger, useGSAP, reducedMotion } from '../lib/gsap'
+import { NAV_LINKS, PROFILE } from '../lib/content'
+import { goToSection, scroller } from '../lib/scroll'
+import { useRoute } from '../lib/router'
+import { Arrow, Clock } from './ui'
 
+// Fixed bar: name on the left, place and time in the middle, the menu on the right.
+// It steps out of the way while you scroll down and comes back the moment you scroll up.
 export function Nav() {
+  const route = useRoute()
+  const bar = useRef<HTMLElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
+  const toggle = useRef<HTMLButtonElement>(null)
   const [open, setOpen] = useState(false)
-  const activeIndex = useActiveStop()
-  const activeId = STOPS[activeIndex]?.id
-  const toggleRef = useRef<HTMLButtonElement>(null)
+  const tl = useRef<gsap.core.Timeline | null>(null)
 
-  // Lock scroll behind the open menu; Escape closes it.
   useEffect(() => {
-    if (!open) return
-    scroller.lenis?.stop()
-    document.documentElement.style.overflow = 'hidden'
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setOpen(false)
-        toggleRef.current?.focus()
-      }
+    const st = ScrollTrigger.create({
+      start: 120,
+      end: 'max',
+      onUpdate: (self) => {
+        if (self.direction === 1) bar.current?.setAttribute('data-hidden', '')
+        else bar.current?.removeAttribute('data-hidden')
+      },
+      onLeaveBack: () => bar.current?.removeAttribute('data-hidden'),
+    })
+    return () => st.kill()
+  }, [])
+
+  useGSAP(
+    () => {
+      const fast = reducedMotion()
+      tl.current = gsap
+        .timeline({ paused: true, defaults: { ease: 'cut' } })
+        .set(panel.current, { visibility: 'visible' })
+        .fromTo(panel.current, { clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: fast ? 0 : 0.8 })
+        .from('[data-m-link]', { yPercent: 110, duration: fast ? 0 : 0.9, ease: 'soft', stagger: 0.06 }, fast ? 0 : 0.25)
+        .from('[data-m-fade]', { opacity: 0, duration: fast ? 0 : 0.5, ease: 'none' }, fast ? 0 : 0.6)
+    },
+    { scope: panel },
+  )
+
+  useEffect(() => {
+    if (!tl.current) return
+    if (open) {
+      bar.current?.removeAttribute('data-hidden')
+      scroller.lenis?.stop()
+      tl.current.timeScale(1).play()
+      const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+      window.addEventListener('keydown', onKey)
+      panel.current?.querySelector<HTMLElement>('a')?.focus({ preventScroll: true })
+      return () => window.removeEventListener('keydown', onKey)
     }
-    window.addEventListener('keydown', onKey)
-    return () => {
-      scroller.lenis?.start()
-      document.documentElement.style.overflow = ''
-      window.removeEventListener('keydown', onKey)
-    }
+    scroller.lenis?.start()
+    tl.current.timeScale(1.6).reverse().then(() => {
+      if (tl.current?.reversed()) gsap.set(panel.current, { visibility: 'hidden' })
+    })
   }, [open])
 
-  const go = (id: string) => (e: MouseEvent) => {
-    e.preventDefault()
+  const go = (id: string) => () => {
     setOpen(false)
-    // Let the menu cleanup restart Lenis before scrolling.
-    requestAnimationFrame(() => scrollToId(id))
+    toggle.current?.focus({ preventScroll: true })
+    goToSection(id)
   }
 
   return (
     <>
-      <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
-        <nav
-          aria-label="Main"
-          className="pointer-events-auto flex items-center gap-2 rounded-full border border-ink-3 bg-ink-1/70 p-2 backdrop-blur-xl"
-        >
-          <a
-            href="#top"
-            onClick={go('top')}
-            aria-label="Sudeep Bhandari, back to top"
-            className="title-4 flex items-center gap-2 rounded-full px-3 py-2 transition-colors duration-300 ease-base hover:bg-ink-3"
-          >
-            <span aria-hidden className="size-2 bg-signal" />
-            Sudeep
-          </a>
+      <header
+        ref={bar}
+        data-chrome
+        className="nav gutter fixed inset-x-0 top-0 z-[80] flex items-center justify-between py-5"
+        style={open ? { color: '#000' } : undefined}
+      >
+        <button type="button" onClick={go('top')} className="t-label flex items-center gap-3" aria-label="Sudeep Bhandari, back to top">
+          <span className="size-2 bg-current" aria-hidden />
+          Sudeep Bhandari
+        </button>
 
-          <ul className="hidden items-center md:flex">
-            {NAV_LINKS.map((link) => {
-              const current = link.id === activeId
-              return (
-                <li key={link.id} className="relative">
-                  {current && (
-                    <motion.span
-                      layoutId="nav-current"
-                      className="absolute inset-0 rounded-full bg-ink-3"
-                      transition={{ duration: 0.5, ease: BASE_EASE }}
-                    />
-                  )}
-                  <a
-                    href={`#${link.id}`}
-                    onClick={go(link.id)}
-                    aria-current={current ? 'location' : undefined}
-                    className={`title-4 relative block rounded-full px-3 py-2 transition-colors duration-300 ease-base hover:text-fg ${
-                      current ? 'text-fg' : 'text-fg-muted'
-                    }`}
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              )
-            })}
-          </ul>
+        <p className="t-label hidden md:block">
+          Bengaluru · <Clock />
+        </p>
 
-          <a
-            href={`mailto:${PROFILE.email}`}
-            className="button-sm hidden rounded-full bg-fg px-3 py-2 text-ink-0 transition-[scale,background-color] duration-300 ease-base hover:bg-[#e6e6e6] active:scale-[0.98] md:block"
-          >
-            Email me
-          </a>
-
+        <div className="flex items-center gap-6">
+          {route !== '/' && (
+            <button type="button" onClick={go('work')} className="t-label link hidden sm:inline-block">
+              Index
+            </button>
+          )}
           <button
-            ref={toggleRef}
+            ref={toggle}
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            aria-controls="mobile-menu"
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            className="relative flex size-10 items-center justify-center rounded-full transition-colors duration-300 ease-base hover:bg-ink-3 active:scale-[0.98] md:hidden"
+            aria-controls="menu"
+            className="t-label flex items-center gap-3 py-1"
           >
-            {/* Two lines that rotate into an X */}
-            <span
-              aria-hidden
-              className={`absolute h-px w-4 bg-fg transition-transform duration-500 ease-base ${
-                open ? 'rotate-45' : '-translate-y-[3px]'
-              }`}
-            />
-            <span
-              aria-hidden
-              className={`absolute h-px w-4 bg-fg transition-transform duration-500 ease-base ${
-                open ? '-rotate-45' : 'translate-y-[3px]'
-              }`}
-            />
+            <span className="grid">
+              <span className={`[grid-area:1/1] transition-opacity duration-200 ${open ? 'opacity-0' : ''}`}>Menu</span>
+              <span className={`[grid-area:1/1] transition-opacity duration-200 ${open ? '' : 'opacity-0'}`} aria-hidden={!open}>
+                Close
+              </span>
+            </span>
+            <span aria-hidden className="relative block h-2 w-6">
+              <span
+                className={`absolute inset-x-0 top-0 h-px bg-current transition-transform duration-500 ease-soft ${open ? 'translate-y-[4px] rotate-[20deg]' : ''}`}
+              />
+              <span
+                className={`absolute inset-x-0 bottom-0 h-px bg-current transition-transform duration-500 ease-soft ${open ? '-translate-y-[3px] -rotate-[20deg]' : ''}`}
+              />
+            </span>
           </button>
-        </nav>
-      </div>
+        </div>
+      </header>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            id="mobile-menu"
-            className="fixed inset-0 z-40 flex flex-col justify-center bg-ink-0/90 px-6 backdrop-blur-2xl md:hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: BASE_EASE }}
-          >
-            <ul className="flex flex-col gap-2">
-              {NAV_LINKS.map((link, i) => (
-                <motion.li
-                  key={link.id}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: Math.min(i * 0.06, 0.4), ease: BASE_EASE }}
+      <div
+        ref={panel}
+        id="menu"
+        data-chrome
+        data-nav="ink"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        className="on-signal gutter invisible fixed inset-0 z-[70] flex flex-col justify-end overflow-y-auto pt-24 pb-8"
+      >
+        <nav aria-label="Sections">
+          <ul>
+            {NAV_LINKS.map((link, i) => (
+              <li key={link.id} className="rule-t overflow-hidden">
+                <a
+                  href={`#${link.id}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    go(link.id)()
+                  }}
+                  data-m-link
+                  className="group flex items-baseline gap-4 py-2 md:gap-8"
                 >
-                  <a
-                    href={`#${link.id}`}
-                    onClick={go(link.id)}
-                    aria-current={link.id === activeId ? 'location' : undefined}
-                    className="heading-3 flex items-baseline gap-4 py-2 text-fg-muted transition-colors duration-300 ease-base hover:text-fg aria-[current]:text-fg"
-                  >
-                    <span className="caption-4 font-mono text-signal">
-                      {String(STOPS.findIndex((s) => s.id === link.id) + 1).padStart(2, '0')}
-                    </span>
+                  <span className="t-label nums w-8 shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="vf t-display transition-[font-variation-settings] duration-500 ease-soft group-hover:[--wdth:100] group-focus-visible:[--wdth:100]">
                     {link.label}
-                  </a>
-                </motion.li>
-              ))}
-            </ul>
-            <motion.a
-              href={`mailto:${PROFILE.email}`}
-              className="button-md mt-8 self-start rounded-full bg-fg px-3 py-2 text-ink-0 active:scale-[0.98]"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3, ease: BASE_EASE }}
-            >
-              Email me
-            </motion.a>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div data-m-fade className="rule-t t-label flex flex-wrap items-center justify-between gap-x-8 gap-y-3 pt-5">
+          <a href={`mailto:${PROFILE.email}`} className="link flex items-center gap-2">
+            {PROFILE.email} <Arrow />
+          </a>
+          <span className="flex gap-6">
+            <a href={PROFILE.github} target="_blank" rel="noreferrer" className="link">
+              GitHub
+            </a>
+            <a href={PROFILE.linkedin} target="_blank" rel="noreferrer" className="link">
+              LinkedIn
+            </a>
+          </span>
+        </div>
+      </div>
     </>
   )
 }

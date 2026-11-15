@@ -1,113 +1,89 @@
-import { useRef } from 'react'
-import { gsap, useGSAP, MOTION_OK } from '../lib/gsap'
-import { TOOLBOX } from '../lib/content'
-import { Container, SectionHeader } from '../components/ui'
-import { Reveal } from '../components/Reveal'
-import { SpindleFigure } from '../figures'
+import { CERTIFICATIONS, EDUCATION, TOOLBOX } from '../lib/content'
+import { Label } from '../components/ui'
+import { Marquee } from '../components/Marquee'
+import { Wipe } from '../components/Wipe'
 
-const TOOL_COUNT = TOOLBOX.reduce((n, g) => n + g.tools.length, 0)
+// Three bands for the marquee, each a mix of categories so no band reads as a list.
+const BANDS = [0, 1, 2].map((b) => TOOLBOX.flatMap((g) => g.tools).filter((_, i) => i % 3 === b))
 
-// GROUP BY. On large screens every tool starts in one unsorted heap in the middle,
-// and the scroll sorts them into their groups. Elsewhere they simply sit in their groups.
-export function Toolbox() {
-  const root = useRef<HTMLElement>(null)
-  const stage = useRef<HTMLDivElement>(null)
-  const board = useRef<HTMLDivElement>(null)
-
-  useGSAP(
-    () => {
-      gsap.matchMedia().add(`(min-width: 1024px) and (min-height: 720px) and ${MOTION_OK}`, () => {
-        const tiles = gsap.utils.toArray<HTMLElement>('[data-tile]', board.current)
-        const rand = gsap.utils.random(-1, 1, true)
-        // Fixed jitter per tile, so the heap keeps its shape on resize.
-        const jitter = tiles.map(() => ({ x: rand(), y: rand(), r: rand() }))
-
-        // Offsets ignore transforms, so the heap can be re-measured mid animation.
-        const heap = (i: number) => {
-          const b = board.current!
-          const t = tiles[i]
-          const cx = b.clientWidth / 2
-          const cy = b.clientHeight / 2
-          return {
-            x: cx - (t.offsetLeft + t.offsetWidth / 2) + jitter[i].x * b.clientWidth * 0.14,
-            y: cy - (t.offsetTop + t.offsetHeight / 2) + jitter[i].y * b.clientHeight * 0.16,
-          }
-        }
-
-        const tl = gsap.timeline({
-          defaults: { ease: 'none' },
-          scrollTrigger: {
-            trigger: stage.current,
-            start: 'center center',
-            end: '+=110%',
-            pin: true,
-            scrub: 0.8,
-            invalidateOnRefresh: true,
-          },
-        })
-        tl.fromTo('[data-group-head]', { opacity: 0 }, { opacity: 1, duration: 0.2 }, 0.7)
-        tl.fromTo(
-          tiles,
-          {
-            x: (i: number) => heap(i).x,
-            y: (i: number) => heap(i).y,
-            rotation: (i: number) => jitter[i].r * 14,
-          },
-          {
-            x: 0,
-            y: 0,
-            rotation: 0,
-            ease: 'base',
-            duration: 0.6,
-            stagger: { each: 0.4 / tiles.length, from: 'random' },
-          },
-          0.05,
-        )
-      })
-    },
-    { scope: root },
-  )
-
+function Band({ tools, outline }: { tools: string[]; outline?: boolean }) {
   return (
-    <section id="toolbox" ref={root} aria-labelledby="toolbox-title" className="py-24">
-      <Container>
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-16">
-          <SectionHeader id="toolbox" title={<span id="toolbox-title">Toolbox</span>}>
-            {TOOL_COUNT} tools, grouped by what they’re for.
-          </SectionHeader>
-          <SpindleFigure />
-        </div>
-      </Container>
+    <>
+      {tools.map((t) => (
+        <span key={t} className="flex items-center">
+          <span className={`vf t-display px-[0.18em] whitespace-nowrap ${outline ? 'outline-type' : ''}`}>{t}</span>
+          <span className="size-[clamp(0.6rem,1.4vw,1.5rem)] shrink-0 bg-signal" />
+        </span>
+      ))}
+    </>
+  )
+}
 
-      <Container>
-        <div ref={stage} className="pt-8">
-          <Reveal>
-            <div ref={board} className="relative mt-16 grid gap-x-12 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
-              {TOOLBOX.map((g) => (
-                <div key={g.line}>
-                  <div data-group-head className="flex items-baseline justify-between gap-4 border-b border-ink-3 pb-2">
-                    <h3 className="title-3">{g.category}</h3>
-                    <span className="caption-4 font-mono text-fg-subtle">
-                      {g.line} · {g.tools.length}
-                    </span>
-                  </div>
-                  <ul className="mt-4 flex flex-wrap gap-1">
-                    {g.tools.map((t) => (
-                      <li
-                        key={t}
-                        data-tile
-                        className="caption-1 border border-ink-3 bg-ink-1 px-2 py-1 font-mono text-fg-muted transition-colors duration-300 ease-base hover:border-signal hover:text-fg"
-                      >
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </Reveal>
+// The tools, twice: once as moving type you feel, once as a table you can read.
+export function Toolbox() {
+  return (
+    <section id="toolbox" aria-labelledby="tools-title" className="rule-t relative pb-[58vh]">
+      <header className="gutter grid grid-cols-12 items-end gap-x-4 pt-[12vh] pb-[8vh]">
+        <div className="col-span-12 md:col-span-3">
+          <Label index="03">Toolbox</Label>
         </div>
-      </Container>
+        <h2 id="tools-title" data-reveal="lines" className="vf t-display col-span-12 mt-6 md:col-span-9 md:mt-0">
+          What I reach for
+        </h2>
+      </header>
+
+      <div className="flex flex-col gap-[1.5vw] py-[2vh]">
+        <Marquee speed={70}>
+          <Band tools={BANDS[0]} />
+        </Marquee>
+        <Marquee speed={50} dir={-1}>
+          <Band tools={BANDS[1]} outline />
+        </Marquee>
+        <Marquee speed={85}>
+          <Band tools={BANDS[2]} />
+        </Marquee>
+      </div>
+
+      <div className="gutter mt-[10vh] grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-3 lg:grid-cols-6">
+        {TOOLBOX.map((g) => (
+          <div key={g.category} data-reveal="up" className="rule-t pt-4">
+            <h3 className="t-label text-fg-muted">{g.category}</h3>
+            <ul className="mt-4 space-y-1">
+              {g.tools.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="gutter mt-[16vh] grid grid-cols-12 gap-x-4 gap-y-12">
+        <div className="col-span-12 md:col-span-3">
+          <Label index="04">Education</Label>
+        </div>
+        <div className="col-span-12 md:col-span-9">
+          <ul>
+            {EDUCATION.map((e) => (
+              <li key={e.title} data-reveal="up" className="rule-t grid grid-cols-9 items-baseline gap-x-4 gap-y-1 py-6">
+                <h3 className="t-h3 col-span-9 md:col-span-4">{e.title}</h3>
+                <p className="col-span-9 text-fg-muted md:col-span-3">{e.org}</p>
+                <p className="t-label nums col-span-9 text-fg-muted md:col-span-2 md:text-right">{e.dates}</p>
+              </li>
+            ))}
+          </ul>
+          <h3 className="t-label mt-12 text-fg-muted">Certifications</h3>
+          <ul className="mt-4 grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+            {CERTIFICATIONS.map((c) => (
+              <li key={c.title} data-reveal="up" className="rule-t flex items-baseline justify-between gap-6 py-4">
+                <span>{c.title}</span>
+                <span className="t-label text-fg-muted">{c.issuer}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <Wipe to="signal" />
     </section>
   )
 }

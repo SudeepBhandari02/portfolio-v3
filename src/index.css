@@ -1,12 +1,10 @@
 @import 'tailwindcss';
-@import './components/iso/iso.css';
 
-/* Design tokens. Values follow the landing-page-design skill (B1 to B7). */
+/* Tokens. Black, white and one orange. The orange is used as whole fields, not as trim. */
 @theme {
-  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Geist Mono Variable', ui-monospace, SFMono-Regular, monospace;
 
-  /* Dark surfaces: only the approved background colors */
   --color-ink-0: #000000;
   --color-ink-1: #181818;
   --color-ink-2: #1f1f1f;
@@ -17,183 +15,28 @@
   --color-fg-muted: #9b9b9b;
   --color-fg-subtle: #7a7a7a;
 
-  /* One signal color, used sparingly: the answer in the data. */
   --color-signal: #ff6b2c;
+  --color-rule: rgb(255 255 255 / 0.14);
+  --color-rule-ink: rgb(0 0 0 / 0.22);
 
-  --ease-base: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-cut: cubic-bezier(0.76, 0, 0.24, 1);
 
-  --animate-signal: signal 2.4s var(--ease-base) infinite;
-  --animate-caret: caret 1.1s steps(1) infinite;
-  --animate-rise: rise 2.4s var(--ease-base) infinite;
+  --animate-blink: blink 1.1s steps(1) infinite;
 
-  @keyframes caret {
+  @keyframes blink {
     50% {
       opacity: 0;
     }
   }
-  /* A packet of data climbing the pipeline line, bottom to top. */
-  @keyframes rise {
-    0% {
-      transform: translateY(0);
-      opacity: 0;
-    }
-    15%,
-    80% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-100%);
-      opacity: 0;
-    }
-  }
-
-  @keyframes signal {
-    0% {
-      transform: scale(1);
-      opacity: 0.6;
-    }
-    100% {
-      transform: scale(2.6);
-      opacity: 0;
-    }
-  }
 }
 
-/* Named text styles (B1). Apply these instead of loose size + weight utilities. */
-@utility heading-1 {
-  font-size: var(--text-6xl);
-  line-height: var(--text-6xl--line-height);
-  font-weight: 600;
-  letter-spacing: -0.025em;
+:root {
+  --gutter: clamp(16px, 3.2vw, 56px);
+  --nav-fg: #ffffff;
 }
-@utility heading-2 {
-  font-size: var(--text-5xl);
-  line-height: var(--text-5xl--line-height);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-}
-@utility heading-3 {
-  font-size: var(--text-4xl);
-  line-height: var(--text-4xl--line-height);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-@utility heading-4 {
-  font-size: var(--text-3xl);
-  line-height: var(--text-3xl--line-height);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-}
-@utility heading-5 {
-  font-size: var(--text-2xl);
-  line-height: var(--text-2xl--line-height);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-@utility heading-6 {
-  font-size: var(--text-xl);
-  line-height: var(--text-xl--line-height);
-  font-weight: 600;
-}
-@utility title-1 {
-  font-size: var(--text-xl);
-  line-height: var(--text-xl--line-height);
-  font-weight: 500;
-}
-@utility title-2 {
-  font-size: var(--text-lg);
-  line-height: var(--text-lg--line-height);
-  font-weight: 500;
-}
-@utility title-3 {
-  font-size: var(--text-base);
-  line-height: var(--text-base--line-height);
-  font-weight: 500;
-}
-@utility title-4 {
-  font-size: var(--text-sm);
-  line-height: var(--text-sm--line-height);
-  font-weight: 500;
-}
-@utility title-5 {
-  font-size: var(--text-xs);
-  line-height: var(--text-xs--line-height);
-  font-weight: 500;
-}
-@utility body-1 {
-  font-size: var(--text-base);
-  line-height: var(--text-base--line-height);
-  font-weight: 600;
-}
-@utility body-2 {
-  font-size: var(--text-base);
-  line-height: var(--text-base--line-height);
-  font-weight: 500;
-}
-@utility body-3 {
-  font-size: var(--text-base);
-  line-height: var(--text-base--line-height);
-  font-weight: 400;
-}
-@utility body-4 {
-  font-size: var(--text-sm);
-  line-height: var(--text-sm--line-height);
-  font-weight: 600;
-}
-@utility body-5 {
-  font-size: var(--text-sm);
-  line-height: var(--text-sm--line-height);
-  font-weight: 500;
-}
-@utility body-6 {
-  font-size: var(--text-sm);
-  line-height: var(--text-sm--line-height);
-  font-weight: 400;
-}
-@utility button-lg {
-  font-size: var(--text-lg);
-  line-height: var(--text-lg--line-height);
-  font-weight: 600;
-}
-@utility button-md {
-  font-size: var(--text-base);
-  line-height: var(--text-base--line-height);
-  font-weight: 600;
-}
-@utility button-sm {
-  font-size: var(--text-sm);
-  line-height: var(--text-sm--line-height);
-  font-weight: 600;
-}
-@utility button-xsm {
-  font-size: var(--text-xs);
-  line-height: var(--text-xs--line-height);
-  font-weight: 600;
-}
-@utility caption-1 {
-  font-size: var(--text-sm);
-  line-height: var(--text-sm--line-height);
-  font-weight: 500;
-}
-@utility caption-2 {
-  font-size: var(--text-sm);
-  line-height: var(--text-sm--line-height);
-  font-weight: 400;
-}
-@utility caption-3 {
-  font-size: var(--text-xs);
-  line-height: var(--text-xs--line-height);
-  font-weight: 600;
-}
-@utility caption-4 {
-  font-size: var(--text-xs);
-  line-height: var(--text-xs--line-height);
-  font-weight: 500;
-}
-@utility caption-5 {
-  font-size: var(--text-xs);
-  line-height: var(--text-xs--line-height);
-  font-weight: 400;
+:root[data-nav='ink'] {
+  --nav-fg: #000000;
 }
 
 @layer base {
@@ -205,15 +48,16 @@
     background: var(--color-ink-0);
     color: var(--color-fg);
     font-family: var(--font-sans);
+    font-size: clamp(1rem, 0.35vw + 0.92rem, 1.125rem);
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
   }
   h1,
   h2,
   h3,
-  h4,
-  h5,
-  h6 {
+  h4 {
     text-wrap: balance;
   }
   p,
@@ -222,148 +66,328 @@
   }
   :focus-visible {
     outline: 2px solid var(--color-signal);
-    outline-offset: 2px;
+    outline-offset: 3px;
+  }
+  [data-nav='ink'] :focus-visible {
+    outline-color: #000000;
   }
   ::selection {
     background: var(--color-signal);
     color: #000000;
   }
-}
-
-/* Tagline reveal (B11): each word goes from muted to full, one at a time. */
-.tagline-word {
-  opacity: 0.3;
-  transition: opacity 500ms var(--ease-base);
-}
-.tagline-word[data-on] {
-  opacity: 1;
-}
-
-/* Pipeline (Systems section). Everything below only applies while it is pinned. */
-.stage-panel {
-  display: none;
-}
-[data-pipeline='pinned'] .stage-panel {
-  display: grid;
-}
-[data-pipeline='pinned'] .stage-inline {
-  display: none;
-}
-.stage-panel > * {
-  grid-area: 1 / 1;
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 500ms var(--ease-base),
-    transform 500ms var(--ease-base);
-}
-.stage-panel > [data-state='active'] {
-  opacity: 1;
-  transform: none;
-}
-.stage-card {
-  transition:
-    opacity 500ms var(--ease-base),
-    border-color 300ms var(--ease-base);
-}
-[data-pipeline='pinned'] .stage-card {
-  opacity: 0.35;
-}
-[data-pipeline='pinned'] .stage-card[data-state='passed'] {
-  opacity: 0.6;
-}
-[data-pipeline='pinned'] .stage-card[data-state='active'] {
-  opacity: 1;
-  border-color: var(--color-signal);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tagline-word,
-  .stage-card,
-  .stage-panel > * {
-    transition: none;
+  [data-nav='ink'] ::selection {
+    background: #000000;
+    color: var(--color-signal);
+  }
+  img {
+    display: block;
+    max-width: 100%;
   }
 }
 
-/* Isometric figures (anatomy kit). Tokens retuned to the site palette: the card is ink-1,
-   tones sit a few percent apart, and the one lit accent is the signal color. */
-.iso {
-  --anatomy-card: #181818;
-  --anatomy-paper: #181818;
-  --anatomy-face: #212121;
-  --anatomy-top: #212121;
-  --anatomy-shade-0: #111111;
-  --anatomy-shade-1: #141414;
-  --anatomy-shade-2: #181818;
-  --anatomy-shade-3: #1c1c1c;
-  --anatomy-lit-top: #2e1b11;
-  --anatomy-lit-shade: #22150d;
-  --anatomy-hi: #d6d6d6;
-  --anatomy-mid: #707070;
-  --anatomy-lo: #474747;
-  --anatomy-faint: #2f2f2f;
-  --anatomy-lit: var(--color-signal);
-  --anatomy-halo: #000000;
-  --anatomy-halo-opacity: 0.95;
-  --anatomy-text: var(--color-fg-muted);
-  --anatomy-muted: var(--color-fg-subtle);
-  --anatomy-mono: var(--font-mono);
-  --anatomy-void: #080808;
+/* ---------- Type ----------
+   One family. The width axis does the work a second typeface usually does:
+   condensed and heavy for display, normal width for reading. */
+.vf {
+  font-variation-settings:
+    'wght' var(--wght, 800),
+    'wdth' var(--wdth, 62);
 }
-/* On the lighter ink-1 sections the card steps up one surface. */
-.iso[data-surface='raised'] {
-  --anatomy-card: #1f1f1f;
-  --anatomy-paper: #1f1f1f;
-  --anatomy-face: #282828;
-  --anatomy-top: #282828;
-  --anatomy-shade-0: #171717;
-  --anatomy-shade-1: #1b1b1b;
-  --anatomy-shade-2: #1f1f1f;
-  --anatomy-shade-3: #232323;
-  --anatomy-lit-top: #36200f;
-  --anatomy-lit-shade: #29180c;
-  --anatomy-lo: #4e4e4e;
-  --anatomy-faint: #363636;
-  --anatomy-void: #0e0e0e;
+.t-mega {
+  font-size: clamp(4.25rem, 20vw, 27rem);
+  line-height: 0.8;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
 }
-.iso-figure {
-  margin: 0;
+.t-display {
+  font-size: clamp(2.75rem, 8.4vw, 10rem);
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  --wght: 760;
+  --wdth: 66;
 }
-.iso-plate {
-  border-radius: 16px;
-  padding: 44px 16px;
-  box-shadow: 0 0 0 1px var(--color-ink-3);
+.t-h2 {
+  font-size: clamp(1.9rem, 4.2vw, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  font-stretch: 88%;
+}
+.t-h3 {
+  font-size: clamp(1.3rem, 1.9vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  font-stretch: 92%;
+}
+.t-lead {
+  font-size: clamp(1.2rem, 1.75vw, 1.75rem);
+  line-height: 1.28;
+  letter-spacing: -0.012em;
+  font-weight: 400;
+}
+.t-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.t-code {
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 0.25vw + 0.74rem, 0.9375rem);
+  line-height: 1.6;
+}
+.nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Layout ---------- */
+.gutter {
+  padding-inline: var(--gutter);
+}
+.rule-t {
+  border-top: 1px solid var(--color-rule);
+}
+.rule-b {
+  border-bottom: 1px solid var(--color-rule);
+}
+.on-signal {
+  background: var(--color-signal);
+  color: #000000;
+}
+.on-signal .rule-t,
+.on-signal .rule-b {
+  border-color: var(--color-rule-ink);
+}
+
+/* The one recurring shape: a square cell. */
+.cell {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--color-signal);
+  flex: none;
+}
+.on-signal .cell {
+  background: #000000;
+}
+
+/* ---------- Controls: square, no radius, fill wipes in from the left ---------- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 1.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #000000;
+  background: var(--color-fg);
   overflow: hidden;
+  isolation: isolate;
+  transition: color 0.35s var(--ease-soft);
 }
-.iso-plate-corner {
-  font-size: 11px;
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-signal);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease-soft);
 }
-.iso-legend {
-  font-size: 13px;
-  color: var(--color-fg-subtle);
+.btn[data-tone='signal'] {
+  background: var(--color-signal);
 }
-.iso-key {
+.btn[data-tone='signal']::before {
+  background: var(--color-fg);
+}
+.btn[data-tone='ink'] {
+  background: #000000;
+  color: var(--color-fg);
+}
+.btn[data-tone='ink']::before {
+  background: var(--color-fg);
+}
+@media (hover: hover) {
+  .btn:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  .btn[data-tone='ink']:hover {
+    color: #000000;
+  }
+  .btn:hover .btn-arrow {
+    transform: translateX(4px);
+  }
+}
+.btn:active {
+  scale: 0.98;
+}
+.btn-arrow {
+  transition: transform 0.35s var(--ease-soft);
+}
+
+/* Underline that draws in from the left. */
+@layer components {
+  .link {
+    display: inline-block;
+  }
+}
+.link {
+  position: relative;
+}
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.12em;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.45s var(--ease-soft);
+}
+@media (hover: hover) {
+  .link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+.link[data-on]::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Nav ---------- */
+.nav {
+  color: var(--nav-fg);
+  transition:
+    color 0.3s linear,
+    transform 0.5s var(--ease-soft);
+}
+.nav[data-hidden] {
+  transform: translateY(-110%);
+}
+
+/* ---------- Work rows: a slab of orange rises behind the row ---------- */
+.row {
+  position: relative;
+  isolation: isolate;
+  transition: color 0.35s var(--ease-soft);
+}
+.row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-signal);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.5s var(--ease-soft);
+}
+.row .row-name {
+  transition: font-variation-settings 0.6s var(--ease-soft);
+}
+.row .row-dim {
   color: var(--color-fg-muted);
+  transition: color 0.35s var(--ease-soft);
 }
-.iso-swatch[data-mark='lit'] path {
-  stroke: var(--color-signal);
+@media (hover: hover) {
+  .row:hover {
+    color: #000000;
+  }
+  .row:hover::before {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  .row:hover .row-name {
+    --wdth: 92;
+  }
+  .row:hover .row-dim {
+    color: #000000;
+  }
+  .row:hover .cell {
+    background: #000000;
+  }
 }
-.iso-void {
-  fill: var(--anatomy-void);
-  stroke: none;
+
+/* On the orange field the slab is black and the type turns orange. */
+.on-signal .row::before {
+  background: #000000;
 }
-.iso-dots[data-tone='signal'] circle,
-.iso-signal {
-  fill: var(--color-signal);
-  opacity: 1;
+.on-signal .row .row-dim {
+  color: #000000;
 }
-.iso-glow {
-  fill: var(--color-signal);
-  opacity: 0.35;
-  filter: blur(3px);
+@media (hover: hover) {
+  .on-signal .row:hover,
+  .on-signal .row:hover .row-dim {
+    color: var(--color-signal);
+  }
 }
-@media (max-width: 560px) {
-  .iso-plate {
-    padding: 40px 4px 64px;
+
+/* ---------- Marquee ---------- */
+.marquee {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.outline-type {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-fg-subtle);
+}
+
+/* ---------- Case study: rolling digits ---------- */
+.roll {
+  display: inline-block;
+  height: 1em;
+  line-height: 1;
+  overflow: hidden;
+  vertical-align: top;
+}
+.roll > span {
+  display: block;
+}
+.roll > span > span {
+  display: block;
+  height: 1em;
+}
+
+/* Pipeline track scrolls natively when it is not pinned (touch and reduced motion). */
+.track-native {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.track-native::-webkit-scrollbar {
+  display: none;
+}
+.track-native li {
+  scroll-snap-align: start;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
