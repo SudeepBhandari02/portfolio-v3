@@ -42,7 +42,9 @@ export function Cursor() {
     }
     const leave = () => {
       shown = false
-      gsap.to(node, { opacity: 0, duration: 0.2 })
+      current = null
+      gsap.to(label.current, { opacity: 0, duration: 0.1, overwrite: true })
+      gsap.to(node, { opacity: 0, width: 10, height: 10, duration: 0.2 })
     }
 
     window.addEventListener('pointermove', move, { passive: true })

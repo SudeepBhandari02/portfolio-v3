@@ -8,6 +8,8 @@ import { createCellField } from '../lib/cell-field'
 import { Arrow, Magnetic } from '../components/ui'
 
 const LINES = ['Sudeep', 'Bhandari']
+// Once the orange has taken the screen, the name rolls over into the handle.
+const ALIAS = ['AKA', 'Stylezee']
 
 // The label above the name cycles through these, re-typing itself each time.
 const ROLES = [PROFILE.role, 'Semantic layers', 'Query engines', 'LLM agents', 'Interfaces people touch']
@@ -77,8 +79,10 @@ export function Hero() {
         })
 
         const chars = gsap.utils.toArray<HTMLElement>('[data-char]')
-        // Lines mask their letters for the entrance only. Afterwards the cell must be free to outgrow its line.
-        gsap.set('[data-line]', { overflow: 'hidden' })
+        const aliasChars = gsap.utils.toArray<HTMLElement>('[data-alias-char]')
+        // The handle waits below its mask until the scroll calls it up.
+        gsap.set('[data-alias]', { visibility: 'visible' })
+        gsap.set(aliasChars, { yPercent: 110 })
 
         // Entrance: letters come up thin and wide, then pull tight into the heavy condensed set.
         const intro = gsap
@@ -90,7 +94,6 @@ export function Hero() {
           .from(canvas.current, { opacity: 0, duration: 1.6, ease: 'none' }, 0.2)
           .from('[data-h-fade]', { opacity: 0, y: 16, duration: 0.9, stagger: 0.08 }, 0.7)
           .from('[data-h-rule]', { scaleX: 0, transformOrigin: 'left', duration: 1.2, ease: 'cut' }, 0.5)
-          .set('[data-line]', { overflow: 'visible' })
         const cancel = onReady(() => intro.play())
 
         // Pointer pull. Only after the entrance, so the two never fight over the same letters.
@@ -130,7 +133,7 @@ export function Hero() {
             scrollTrigger: {
               trigger: root.current,
               start: 'top top',
-              end: '+=110%',
+              end: '+=200%',
               pin: true,
               scrub: 0.6,
               invalidateOnRefresh: true,
@@ -138,11 +141,21 @@ export function Hero() {
             },
           })
           .to('[data-h-out]', { opacity: 0, duration: 0.2 }, 0)
-          .to('[data-line="0"]', { xPercent: -6, duration: 1 }, 0)
-          .to('[data-line="1"]', { xPercent: 6, duration: 1 }, 0)
+          // Only the second line moves, so nothing is pushed off the left edge.
+          .to('[data-line="1"]', { xPercent: 8, duration: 1 }, 0)
           .to(cell.current, { scale: cover, duration: 0.85, ease: 'power2.in' }, 0.1)
           // Not a color tween: the title mixes toward black through a variable, so it follows the theme at rest.
-          .fromTo(title.current, { '--inked': 0 }, { '--inked': 1, duration: 0.2 }, 0.55)
+          // The letters turn black only as the orange finishes arriving, so they are never black on black.
+          .fromTo(title.current, { '--inked': 0 }, { '--inked': 1, duration: 0.12 }, 0.8)
+          // The screen is orange now. Each letter of the name rolls up and out, and the handle rolls in
+          // from below, arriving wide and tightening into the same heavy set.
+          // The roll moves a wrapper around each letter, never the letter itself: the entrance and the
+          // pointer own the letters, and two animations on one element end up restoring each other's leftovers.
+          .to('[data-roll]', { yPercent: -110, duration: 0.3, ease: 'power2.in', stagger: 0.025 }, 1)
+          .to(aliasChars, { yPercent: 0, duration: 0.4, ease: 'power3.out', stagger: 0.03 }, 1.18)
+          .fromTo(aliasChars, { '--wdth': 118 }, { '--wdth': 62, duration: 0.5, ease: 'power2.out', stagger: 0.03 }, 1.18)
+          // Hold on the handle before the page moves on.
+          .to({}, { duration: 0.25 })
 
         return () => {
           cancel()
@@ -194,12 +207,33 @@ export function Hero() {
           className="t-mega relative z-10 w-fit text-[color-mix(in_srgb,#000_calc(var(--inked,0)*100%),var(--color-fg))] select-none"
         >
           {LINES.map((line, i) => (
-            <span key={line} data-line={i} aria-hidden className="block whitespace-nowrap pt-[0.06em]">
-              {line.split('').map((ch, j) => (
-                <span key={j} data-char className="vf inline-block will-change-transform">
-                  {ch}
-                </span>
-              ))}
+            // Each line is moved on scroll, which makes it its own stacking context. The first line is
+            // lifted above the second so the growing cell (inside the second) can never cover it.
+            <span key={line} data-line={i} aria-hidden className={`relative block whitespace-nowrap ${i === 0 ? 'z-10' : ''}`}>
+              {/* The name and the handle each sit in their own mask, so letters can roll through
+                  without clipping the cell, which has to outgrow the line. */}
+              <span className="inline-block overflow-hidden pt-[0.06em] align-bottom">
+                {line.split('').map((ch, j) => (
+                  <span key={j} data-roll className="inline-block will-change-transform">
+                    <span data-char className="vf inline-block will-change-transform">
+                      {ch}
+                    </span>
+                  </span>
+                ))}
+              </span>
+              {/* "AKA" is a small lead-in sitting just above the handle; the handle takes the full size. */}
+              <span
+                data-alias
+                className={`invisible absolute left-0 overflow-hidden pt-[0.06em] pr-[0.04em] ${
+                  i === 0 ? 'bottom-[0.1em] left-[0.02em] text-[0.26em] tracking-[0.03em]' : 'top-0'
+                }`}
+              >
+                {ALIAS[i].split('').map((ch, j) => (
+                  <span key={j} data-alias-char className="vf inline-block will-change-transform">
+                    {ch}
+                  </span>
+                ))}
+              </span>
               {i === 1 && (
                 // The cell. It sits where a full stop would, and on scroll it becomes the next surface.
                 <span
@@ -213,6 +247,7 @@ export function Hero() {
             </span>
           ))}
         </h1>
+        <p className="sr-only">Also known as Stylezee.</p>
 
         <div data-h-rule className="mt-6 hidden h-px bg-rule md:block" />
         <div data-h-out className="t-label mt-4 hidden flex-wrap items-center justify-between gap-x-8 gap-y-3 text-fg-muted md:flex">
